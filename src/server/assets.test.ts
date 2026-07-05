@@ -27,6 +27,7 @@ import {
   createAccountChange,
   deleteAccount,
   getAccount,
+  getCharts,
   getDashboard,
   listAccountChanges,
   listAccounts,
@@ -735,6 +736,114 @@ describe("asset services", () => {
         include: { account: true },
         orderBy: { changedAt: "desc" },
         take: 5,
+      });
+    });
+
+    it("builds monthly chart snapshots by carrying forward latest account amounts", async () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2026-07-05T08:00:00.000Z"));
+
+      prismaMock.account.findMany.mockResolvedValue([
+        {
+          id: "asset-1",
+          name: "工资卡",
+          category: AccountCategory.DEBIT_CARD,
+          type: AccountType.ASSET,
+          currentAmount: 150000n,
+          includeInStats: true,
+          createdAt: new Date("2026-05-10T00:00:00.000Z"),
+        },
+        {
+          id: "liability-1",
+          name: "信用卡",
+          category: AccountCategory.CREDIT_CARD,
+          type: AccountType.LIABILITY,
+          currentAmount: 50000n,
+          includeInStats: true,
+          createdAt: new Date("2026-06-15T00:00:00.000Z"),
+        },
+      ]);
+      prismaMock.accountChange.findMany.mockResolvedValue([
+        {
+          accountId: "asset-1",
+          afterAmount: 100000n,
+          changedAt: new Date("2026-05-10T08:00:00.000Z"),
+        },
+        {
+          accountId: "liability-1",
+          afterAmount: 30000n,
+          changedAt: new Date("2026-06-15T09:00:00.000Z"),
+        },
+        {
+          accountId: "asset-1",
+          afterAmount: 150000n,
+          changedAt: new Date("2026-06-20T10:00:00.000Z"),
+        },
+        {
+          accountId: "liability-1",
+          afterAmount: 50000n,
+          changedAt: new Date("2026-07-03T11:00:00.000Z"),
+        },
+      ]);
+
+      await expect(getCharts("user-1")).resolves.toMatchObject({
+        accounts: [
+          {
+            id: "asset-1",
+            name: "工资卡",
+            category: "debit_card",
+            type: "asset",
+            currentAmount: 150000,
+          },
+          {
+            id: "liability-1",
+            name: "信用卡",
+            category: "credit_card",
+            type: "liability",
+            currentAmount: 50000,
+          },
+        ],
+        months: [
+          {
+            key: "2026-05",
+            label: "2026年5月",
+            accountAmounts: {
+              "asset-1": 100000,
+            },
+          },
+          {
+            key: "2026-06",
+            label: "2026年6月",
+            accountAmounts: {
+              "asset-1": 150000,
+              "liability-1": 30000,
+            },
+          },
+          {
+            key: "2026-07",
+            label: "2026年7月",
+            accountAmounts: {
+              "asset-1": 150000,
+              "liability-1": 50000,
+            },
+          },
+        ],
+      });
+      expect(prismaMock.account.findMany).toHaveBeenCalledWith({
+        where: { userId: "user-1", archived: false, includeInStats: true },
+        orderBy: [{ type: "asc" }, { currentAmount: "desc" }],
+      });
+      expect(prismaMock.accountChange.findMany).toHaveBeenCalledWith({
+        where: {
+          userId: "user-1",
+          accountId: { in: ["asset-1", "liability-1"] },
+        },
+        orderBy: [{ changedAt: "asc" }, { createdAt: "asc" }],
+        select: {
+          accountId: true,
+          afterAmount: true,
+          changedAt: true,
+        },
       });
     });
   });

@@ -17,6 +17,7 @@ import {
   changeTypeToPrisma,
 } from "@/server/domain-mapping";
 import type { AccountCategory } from "@/types/domain";
+import type { ChartsData } from "@/types/charts";
 
 const liabilityCategories = new Set<AccountCategory>([
   "credit_card",
@@ -27,6 +28,47 @@ function inferAccountType(category: AccountCategory) {
   return liabilityCategories.has(category)
     ? AccountType.LIABILITY
     : AccountType.ASSET;
+}
+
+function toMonthKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function toMonthLabel(date: Date) {
+  return `${date.getFullYear()}年${date.getMonth() + 1}月`;
+}
+
+function monthStart(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function monthEnd(date: Date) {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    0,
+    23,
+    59,
+    59,
+    999,
+  );
+}
+
+function addMonths(date: Date, months: number) {
+  return new Date(date.getFullYear(), date.getMonth() + months, 1);
+}
+
+function buildChartMonths(startAt: Date, endAt: Date) {
+  const months = [];
+  let cursor = monthStart(startAt);
+  const finalMonth = monthStart(endAt);
+
+  while (cursor <= finalMonth) {
+    months.push(new Date(cursor));
+    cursor = addMonths(cursor, 1);
+  }
+
+  return months;
 }
 
 export async function getDashboard(userId: string) {
@@ -89,6 +131,98 @@ export async function getDashboard(userId: string) {
       afterAmount: change.afterAmount,
       changedAt: change.changedAt,
     })),
+  };
+}
+
+export async function getCharts(userId: string): Promise<ChartsData> {
+  const accounts = await prisma.account.findMany({
+    where: { userId, archived: false, includeInStats: true },
+    orderBy: [{ type: "asc" }, { currentAmount: "desc" }],
+  });
+
+  if (accounts.length === 0) {
+    return {
+      generatedAt: new Date().toISOString(),
+      accounts: [],
+      months: [],
+    };
+  }
+
+  const accountIds = accounts.map((account) => account.id);
+  const changes = await prisma.accountChange.findMany({
+    where: { userId, accountId: { in: accountIds } },
+    orderBy: [{ changedAt: "asc" }, { createdAt: "asc" }],
+    select: {
+      accountId: true,
+      afterAmount: true,
+      changedAt: true,
+    },
+  });
+  const now = new Date();
+  const earliestAccountAt = accounts.reduce(
+    (earliest, account) =>
+      account.createdAt < earliest ? account.createdAt : earliest,
+    accounts[0].createdAt,
+  );
+  const earliestChangeAt = changes.reduce(
+    (earliest, change) =>
+      change.changedAt < earliest ? change.changedAt : earliest,
+    earliestAccountAt,
+  );
+  const months = buildChartMonths(earliestChangeAt, now);
+  const changesByAccount = new Map<
+    string,
+    { afterAmount: bigint; changedAt: Date }[]
+  >();
+
+  for (const change of changes) {
+    const accountChanges = changesByAccount.get(change.accountId) ?? [];
+    accountChanges.push({
+      afterAmount: change.afterAmount,
+      changedAt: change.changedAt,
+    });
+    changesByAccount.set(change.accountId, accountChanges);
+  }
+
+  return {
+    generatedAt: now.toISOString(),
+    accounts: accounts.map((account) => ({
+      id: account.id,
+      name: account.name,
+      category: accountCategoryFromPrisma[account.category],
+      type: accountTypeFromPrisma[account.type],
+      currentAmount: Number(account.currentAmount),
+      iconKey: account.iconKey,
+    })),
+    months: months.map((month) => {
+      const endAt = monthEnd(month);
+      const accountAmounts: Record<string, number> = {};
+
+      for (const account of accounts) {
+        if (account.createdAt > endAt) {
+          continue;
+        }
+
+        const accountChanges = changesByAccount.get(account.id) ?? [];
+        let amount =
+          accountChanges.length === 0 ? account.currentAmount : 0n;
+
+        for (const change of accountChanges) {
+          if (change.changedAt > endAt) {
+            break;
+          }
+          amount = change.afterAmount;
+        }
+
+        accountAmounts[account.id] = Number(amount);
+      }
+
+      return {
+        key: toMonthKey(month),
+        label: toMonthLabel(month),
+        accountAmounts,
+      };
+    }),
   };
 }
 
