@@ -50,6 +50,7 @@ model Account {
   name           String
   category       AccountCategory
   type           AccountType     @map("account_type")
+  iconKey        String?         @map("icon_key") @db.VarChar(64)
   currentAmount  BigInt          @default(0) @map("current_amount")
   includeInStats Boolean         @default(true) @map("include_in_stats")
   archived       Boolean         @default(false)

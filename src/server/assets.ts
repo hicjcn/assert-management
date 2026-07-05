@@ -77,6 +77,7 @@ export async function getDashboard(userId: string) {
       type: accountTypeFromPrisma[account.type],
       currentAmount: account.currentAmount,
       includeInStats: account.includeInStats,
+      iconKey: account.iconKey,
     })),
     recentChanges: recentChanges.map((change) => ({
       id: change.id,
@@ -103,6 +104,7 @@ export async function listAccounts(userId: string) {
     type: accountTypeFromPrisma[account.type],
     currentAmount: account.currentAmount,
     includeInStats: account.includeInStats,
+    iconKey: account.iconKey,
     note: account.note,
   }));
 }
@@ -123,6 +125,7 @@ export async function getAccount(userId: string, accountId: string) {
     type: accountTypeFromPrisma[account.type],
     currentAmount: account.currentAmount,
     includeInStats: account.includeInStats,
+    iconKey: account.iconKey,
     note: account.note,
   };
 }
@@ -152,6 +155,7 @@ export async function createAccount(userId: string, formData: FormData) {
   const parsed = accountSchema.parse({
     name: formData.get("name"),
     category: formData.get("category"),
+    iconKey: formData.get("iconKey") || undefined,
     currentAmount: formData.get("currentAmount"),
     includeInStats: formData.get("includeInStats") === "on",
     note: formData.get("note") || undefined,
@@ -167,6 +171,7 @@ export async function createAccount(userId: string, formData: FormData) {
         name: parsed.name,
         category: accountCategoryToPrisma[parsed.category],
         type: accountType,
+        iconKey: parsed.iconKey ?? null,
         currentAmount,
         includeInStats: parsed.includeInStats,
         note: parsed.note,
@@ -195,6 +200,7 @@ export async function updateAccount(userId: string, formData: FormData) {
     accountId: formData.get("accountId"),
     name: formData.get("name"),
     category: formData.get("category"),
+    iconKey: formData.get("iconKey") || undefined,
     currentAmount: formData.get("currentAmount"),
     includeInStats: formData.get("includeInStats") === "on",
     note: formData.get("note") || undefined,
@@ -221,6 +227,7 @@ export async function updateAccount(userId: string, formData: FormData) {
         name: parsed.name,
         category: accountCategory,
         type: accountType,
+        iconKey: parsed.iconKey ?? null,
         currentAmount,
         includeInStats: parsed.includeInStats,
         note: parsed.note,

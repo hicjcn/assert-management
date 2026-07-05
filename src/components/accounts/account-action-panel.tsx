@@ -15,6 +15,8 @@ import {
   accountCategoryDescriptions,
   accountCategoryLabels,
   accountCategoryValues,
+  accountIconLabels,
+  accountIconValues,
 } from "@/types/domain";
 
 type ActivePanel = "balance" | "info" | null;
@@ -23,6 +25,7 @@ type AccountActionPanelProps = {
   accountId: string;
   amountInputValue: string;
   category: AccountCategory;
+  iconKey?: string | null;
   includeInStats: boolean;
   name: string;
   note: string;
@@ -33,6 +36,7 @@ export function AccountActionPanel({
   accountId,
   amountInputValue,
   category,
+  iconKey,
   includeInStats,
   name,
   note,
@@ -71,6 +75,7 @@ export function AccountActionPanel({
             <input name="redirectTo" type="hidden" value={redirectTo} />
             <input name="name" type="hidden" value={name} />
             <input name="category" type="hidden" value={category} />
+            <input name="iconKey" type="hidden" value={iconKey ?? ""} />
             <input name="note" type="hidden" value={note} />
             {includeInStats ? (
               <input name="includeInStats" type="hidden" value="on" />
@@ -114,6 +119,18 @@ export function AccountActionPanel({
                   {accountCategoryDescriptions[categoryValue]
                     ? `（${accountCategoryDescriptions[categoryValue]}）`
                     : ""}
+                </option>
+              ))}
+            </select>
+            <select
+              className="h-11 w-full rounded-md border border-slate-200 bg-white px-3 text-base outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+              defaultValue={iconKey ?? ""}
+              name="iconKey"
+            >
+              <option value="">自动匹配图标</option>
+              {accountIconValues.map((accountIcon) => (
+                <option key={accountIcon} value={accountIcon}>
+                  {accountIconLabels[accountIcon]}
                 </option>
               ))}
             </select>

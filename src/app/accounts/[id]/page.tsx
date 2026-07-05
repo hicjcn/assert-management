@@ -3,9 +3,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AccountActionPanel } from "@/components/accounts/account-action-panel";
+import {
+  AccountMark,
+  AccountTypeBadge,
+  getAccountVisual,
+} from "@/components/accounts/account-visual";
 import { MobileShell } from "@/components/layout/mobile-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatAccountCents, formatAccountChangeCents } from "@/lib/money";
+import { cn } from "@/lib/utils";
 import { getAccount, listAccountChanges } from "@/server/assets";
 import { requireSession } from "@/server/auth";
 import {
@@ -43,6 +49,7 @@ export default async function AccountDetailPage({
 
   const redirectTo = `/accounts/${account.id}`;
   const amountInputValue = formatCentsForInput(account.currentAmount);
+  const visual = getAccountVisual(account.category);
 
   return (
     <MobileShell title="账户详情">
@@ -55,28 +62,75 @@ export default async function AccountDetailPage({
           返回账户
         </Link>
 
-        <Card>
+        <Card className={cn("overflow-hidden bg-white", visual.border)}>
+          <div className={cn("relative px-4 pb-5 pt-4", visual.softSurface)}>
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <AccountMark
+                  category={account.category}
+                  className="mb-4 h-12 w-12"
+                  iconKey={account.iconKey}
+                  name={account.name}
+                />
+                <p className="truncate text-xl font-semibold text-slate-950">
+                  {account.name}
+                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <AccountTypeBadge type={account.type}>
+                    {accountTypeLabels[account.type]}
+                  </AccountTypeBadge>
+                  <span className="inline-flex h-6 items-center rounded-full bg-white/80 px-2 text-xs font-medium text-slate-700">
+                    {accountCategoryLabels[account.category]}
+                  </span>
+                  {!account.includeInStats ? (
+                    <span className="inline-flex h-6 items-center rounded-full bg-white/80 px-2 text-xs font-medium text-slate-500">
+                      不计入统计
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+              <div className="shrink-0 pt-1 text-right">
+                <p className="text-xs font-medium text-slate-500">当前金额</p>
+                <p className={cn("mt-1 text-2xl font-semibold", visual.amount)}>
+                  {formatAccountCents(account.currentAmount, account)}
+                </p>
+              </div>
+            </div>
+            <span
+              className={cn("absolute inset-x-0 bottom-0 h-1", visual.accent)}
+            />
+          </div>
+
           <CardHeader>
             <CardTitle>账户信息</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-lg font-semibold text-slate-900">
-                  {account.name}
-                </p>
-                <p className="mt-1 text-xs text-slate-500">
-                  {accountTypeLabels[account.type]} ·{" "}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-md border border-slate-100 bg-slate-50 p-3">
+                <p className="text-xs text-slate-500">账户分类</p>
+                <p className="mt-1 font-medium text-slate-900">
                   {accountCategoryLabels[account.category]}
-                  {!account.includeInStats ? " · 不计入统计" : ""}
                 </p>
               </div>
-              <p className="shrink-0 text-xl font-semibold">
-                {formatAccountCents(account.currentAmount, account)}
-              </p>
+              <div className="rounded-md border border-slate-100 bg-slate-50 p-3">
+                <p className="text-xs text-slate-500">统计状态</p>
+                <p className="mt-1 font-medium text-slate-900">
+                  {account.includeInStats ? "计入统计" : "不计入统计"}
+                </p>
+              </div>
+            </div>
+            <div className="rounded-md border border-slate-100 bg-white p-3">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-medium text-slate-600">账户余额</p>
+                <p
+                  className={cn("shrink-0 text-lg font-semibold", visual.amount)}
+                >
+                  {formatAccountCents(account.currentAmount, account)}
+                </p>
+              </div>
             </div>
             {account.note ? (
-              <p className="rounded-md bg-slate-50 p-3 text-sm text-slate-600">
+              <p className="rounded-md border border-slate-100 bg-slate-50 p-3 text-sm text-slate-600">
                 {account.note}
               </p>
             ) : null}
@@ -85,6 +139,7 @@ export default async function AccountDetailPage({
               accountId={account.id}
               amountInputValue={amountInputValue}
               category={account.category}
+              iconKey={account.iconKey}
               includeInStats={account.includeInStats}
               name={account.name}
               note={account.note ?? ""}

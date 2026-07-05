@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { accountCategoryValues, changeTypeValues } from "@/types/domain";
+import {
+  accountCategoryValues,
+  accountIconValues,
+  changeTypeValues,
+} from "@/types/domain";
 
 const moneyString = z
   .string()
@@ -11,6 +15,7 @@ const moneyString = z
 export const accountSchema = z.object({
   name: z.string().trim().min(1, "请输入账户名称"),
   category: z.enum(accountCategoryValues),
+  iconKey: z.enum(accountIconValues).optional(),
   currentAmount: moneyString,
   includeInStats: z.boolean().default(true),
   note: z.string().trim().optional(),
@@ -20,6 +25,7 @@ export const accountUpdateSchema = z.object({
   accountId: z.string().min(1, "请选择账户"),
   name: z.string().trim().min(1, "请输入账户名称"),
   category: z.enum(accountCategoryValues),
+  iconKey: z.enum(accountIconValues).optional(),
   currentAmount: moneyString,
   includeInStats: z.boolean().default(true),
   note: z.string().trim().optional(),
