@@ -1,1 +1,0 @@
-ALTER TABLE `accounts` ADD COLUMN `icon_key` VARCHAR(64) NULL;

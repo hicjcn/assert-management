@@ -1,4 +1,4 @@
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 import { PrismaClient } from "@/generated/prisma/client";
 
@@ -18,7 +18,7 @@ function getPrismaClient() {
   }
 
   const client = new PrismaClient({
-    adapter: new PrismaMariaDb(databaseUrl),
+    adapter: new PrismaPg(databaseUrl),
     log: process.env.NODE_ENV === "development" ? ["query", "warn", "error"] : ["error"],
   });
 
