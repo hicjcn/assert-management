@@ -322,7 +322,10 @@ export function GoalsWorkspace({ budget, goals }: GoalsWorkspaceProps) {
             <Card key={goal.id}>
               <CardHeader className="space-y-3 pb-3">
                 <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#34c759]/10 text-[#248a3d]">
+                    <CalendarClock className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
                     <CardTitle className="truncate text-base font-semibold text-[#1d1d1f]">
                       {goal.name}
                     </CardTitle>
@@ -330,9 +333,15 @@ export function GoalsWorkspace({ budget, goals }: GoalsWorkspaceProps) {
                       目标 {formatCentsString(goal.targetAmount)}
                     </p>
                   </div>
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#34c759]/10 text-[#248a3d]">
-                    <CalendarClock className="h-5 w-5" />
-                  </span>
+                  {editing ? null : (
+                    <button
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-black/[0.04] text-[#3a3a3c] transition hover:bg-black/[0.06]"
+                      onClick={() => setEditingGoalId(goal.id)}
+                      type="button"
+                    >
+                      <Edit3 className="h-5 w-5" />
+                    </button>
+                  )}
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-black/[0.06]">
                   <div
@@ -395,17 +404,7 @@ export function GoalsWorkspace({ budget, goals }: GoalsWorkspaceProps) {
                       </form>
                     </div>
                   </div>
-                ) : (
-                  <Button
-                    className="w-full"
-                    onClick={() => setEditingGoalId(goal.id)}
-                    type="button"
-                    variant="secondary"
-                  >
-                    <Edit3 className="h-4 w-4" />
-                    编辑
-                  </Button>
-                )}
+                ) : null}
               </CardContent>
             </Card>
           );
