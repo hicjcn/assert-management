@@ -129,6 +129,11 @@ const accountBrandIcons: Record<
     alt: "微信",
     keywords: ["微信", "wechat", "weixin"],
   },
+  apple: {
+    src: "/brand-icons/apple.svg",
+    alt: "苹果",
+    keywords: ["苹果", "apple", "icloud", "apple card"],
+  },
 };
 
 export function getAccountVisual(category: AccountCategory) {

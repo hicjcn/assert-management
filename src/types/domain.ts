@@ -18,6 +18,7 @@ export const accountIconValues = [
   "china_merchants_bank",
   "alipay",
   "wechat",
+  "apple",
 ] as const;
 export type AccountIconKey = (typeof accountIconValues)[number];
 
@@ -61,6 +62,7 @@ export const accountIconLabels: Record<AccountIconKey, string> = {
   china_merchants_bank: "招商银行",
   alipay: "支付宝",
   wechat: "微信",
+  apple: "苹果",
 };
 
 export const changeTypeLabels: Record<ChangeType, string> = {
