@@ -14,11 +14,14 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex h-11 items-center justify-center gap-2 rounded-md px-4 text-sm font-medium transition",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500",
-        variant === "primary" && "bg-teal-600 text-white hover:bg-teal-700",
-        variant === "secondary" && "bg-slate-100 text-slate-900 hover:bg-slate-200",
-        variant === "ghost" && "bg-transparent text-slate-700 hover:bg-slate-100",
+        "inline-flex h-11 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007aff]",
+        variant === "primary" &&
+          "bg-[#007aff] text-white shadow-sm shadow-[#007aff]/25 hover:bg-[#006ee6]",
+        variant === "secondary" &&
+          "border border-white/70 bg-white/85 text-[#1d1d1f] shadow-sm shadow-black/[0.04] hover:bg-white",
+        variant === "ghost" &&
+          "bg-transparent text-[#3a3a3c] hover:bg-white/70",
         className,
       )}
       {...props}

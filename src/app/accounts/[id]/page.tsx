@@ -56,14 +56,14 @@ export default async function AccountDetailPage({
     <MobileShell title="账户详情">
       <div className="space-y-4">
         <Link
-          className="inline-flex h-9 items-center gap-2 text-sm font-medium text-slate-600"
+          className="inline-flex h-9 items-center gap-2 text-sm font-semibold text-[#3a3a3c]"
           href="/accounts"
         >
           <ArrowLeft className="h-4 w-4" />
           返回账户
         </Link>
 
-        <Card className={cn("overflow-hidden bg-white", visual.border)}>
+        <Card className={cn("overflow-hidden", visual.border)}>
           <div className={cn("relative px-4 pb-5 pt-4", visual.softSurface)}>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
@@ -74,7 +74,7 @@ export default async function AccountDetailPage({
                   name={account.name}
                 />
                 <div className="flex min-w-0 items-center gap-2">
-                  <p className="min-w-0 truncate text-xl font-semibold text-slate-950">
+                  <p className="min-w-0 truncate text-xl font-semibold text-[#1d1d1f]">
                     {account.name}
                   </p>
                   <AccountTypeBadge
@@ -84,24 +84,24 @@ export default async function AccountDetailPage({
                     {accountTypeLabels[account.type]}
                   </AccountTypeBadge>
                   {!account.includeInStats ? (
-                    <span className="inline-flex h-4 shrink-0 items-center rounded-full bg-white/80 px-1.5 text-[9px] font-medium text-slate-500">
+                    <span className="inline-flex h-4 shrink-0 items-center rounded-full bg-white/80 px-1.5 text-[9px] font-medium text-[#6e6e73]">
                       不计入统计
                     </span>
                   ) : null}
                 </div>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <span className="inline-flex h-6 items-center rounded-full bg-white/80 px-2 text-xs font-medium text-slate-700">
+                  <span className="inline-flex h-6 items-center rounded-full bg-white/80 px-2 text-xs font-medium text-[#3a3a3c]">
                     {accountCategoryLabels[account.category]}
                   </span>
                 </div>
                 {account.note ? (
-                  <p className="mt-3 line-clamp-2 text-sm leading-5 text-slate-600">
+                  <p className="mt-3 line-clamp-2 text-sm leading-5 text-[#3a3a3c]">
                     {account.note}
                   </p>
                 ) : null}
               </div>
               <div className="shrink-0 pt-1 text-right">
-                <p className="text-xs font-medium text-slate-500">当前金额</p>
+                <p className="text-xs font-medium text-[#86868b]">当前金额</p>
                 <p className={cn("mt-1 text-2xl font-semibold", visual.amount)}>
                   {formatAccountCents(account.currentAmount, account)}
                 </p>
@@ -132,11 +132,11 @@ export default async function AccountDetailPage({
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             {changes.length === 0 ? (
-              <p className="text-slate-500">暂无变更记录。</p>
+              <p className="text-[#6e6e73]">暂无变更记录。</p>
             ) : (
               changes.map((change) => (
                 <div
-                  className="space-y-2 border-b border-slate-100 pb-3 last:border-0 last:pb-0"
+                  className="space-y-2 border-b border-black/[0.06] pb-3 last:border-0 last:pb-0"
                   key={change.id}
                 >
                   <div className="flex items-center justify-between gap-3">
@@ -150,14 +150,14 @@ export default async function AccountDetailPage({
                       />
                       <div className="min-w-0">
                         <div className="flex min-w-0 items-center gap-1.5">
-                          <p className="min-w-0 truncate font-medium text-slate-900">
+                          <p className="min-w-0 truncate font-medium text-[#1d1d1f]">
                             {changeTypeLabels[change.type]}
                           </p>
-                          <span className="inline-flex h-4 shrink-0 items-center rounded-full bg-slate-100 px-1 text-[9px] font-medium text-slate-500">
+                          <span className="inline-flex h-4 shrink-0 items-center rounded-full bg-black/[0.05] px-1 text-[9px] font-medium text-[#6e6e73]">
                             {accountCategoryLabels[change.category]}
                           </span>
                         </div>
-                        <p className="mt-1 text-xs text-slate-500">
+                        <p className="mt-1 text-xs text-[#86868b]">
                           {change.changedAt.toLocaleString("zh-CN", {
                             month: "2-digit",
                             day: "2-digit",
@@ -174,7 +174,7 @@ export default async function AccountDetailPage({
                       change={change}
                     />
                   </div>
-                  <div className="flex justify-between text-xs text-slate-500">
+                  <div className="flex justify-between text-xs text-[#86868b]">
                     <span>
                       变更前{" "}
                       {formatAccountCents(change.beforeAmount, {
@@ -189,7 +189,7 @@ export default async function AccountDetailPage({
                     </span>
                   </div>
                   {change.note ? (
-                    <p className="text-sm text-slate-600">{change.note}</p>
+                    <p className="text-sm text-[#3a3a3c]">{change.note}</p>
                   ) : null}
                 </div>
               ))

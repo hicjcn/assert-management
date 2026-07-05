@@ -39,7 +39,7 @@ export default async function RecordsPage() {
           <CardContent>
             <form action={createAccountChangeAction} className="space-y-3">
               <select
-                className="h-11 w-full rounded-md border border-slate-200 bg-white px-3 text-base outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+                className="h-11 w-full rounded-lg border border-white/70 bg-white/85 px-3 text-base text-[#1d1d1f] shadow-sm shadow-black/[0.03] outline-none transition focus:border-[#007aff] focus:ring-2 focus:ring-[#007aff]/15"
                 disabled={accounts.length === 0}
                 name="accountId"
                 required
@@ -54,7 +54,7 @@ export default async function RecordsPage() {
               </select>
               <div className="grid grid-cols-2 gap-3">
                 <select
-                  className="h-11 rounded-md border border-slate-200 bg-white px-3 text-base outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+                  className="h-11 rounded-lg border border-white/70 bg-white/85 px-3 text-base text-[#1d1d1f] shadow-sm shadow-black/[0.03] outline-none transition focus:border-[#007aff] focus:ring-2 focus:ring-[#007aff]/15"
                   name="type"
                   required
                 >
@@ -88,7 +88,7 @@ export default async function RecordsPage() {
                 保存变更
               </Button>
               {accounts.length === 0 ? (
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-[#6e6e73]">
                   先新增账户，再记录金额变更。
                 </p>
               ) : null}
@@ -99,7 +99,7 @@ export default async function RecordsPage() {
         <div className="space-y-3">
           {changes.length === 0 ? (
             <Card>
-              <CardContent className="pt-5 text-sm text-slate-600">
+              <CardContent className="pt-5 text-sm text-[#3a3a3c]">
                 暂无变更记录。
               </CardContent>
             </Card>
@@ -118,14 +118,14 @@ export default async function RecordsPage() {
                       />
                       <div className="min-w-0">
                         <div className="flex min-w-0 items-center gap-1.5">
-                          <p className="min-w-0 truncate font-medium text-slate-900">
+                          <p className="min-w-0 truncate font-medium text-[#1d1d1f]">
                             {change.accountName}
                           </p>
-                          <span className="inline-flex h-4 shrink-0 items-center rounded-full bg-slate-100 px-1 text-[9px] font-medium text-slate-500">
+                          <span className="inline-flex h-4 shrink-0 items-center rounded-full bg-black/[0.05] px-1 text-[9px] font-medium text-[#6e6e73]">
                             {accountCategoryLabels[change.category]}
                           </span>
                         </div>
-                        <p className="mt-1 text-xs text-slate-500">
+                        <p className="mt-1 text-xs text-[#86868b]">
                           {changeTypeLabels[change.type]} ·{" "}
                           {change.changedAt.toLocaleString("zh-CN", {
                             month: "2-digit",
@@ -143,7 +143,7 @@ export default async function RecordsPage() {
                       change={change}
                     />
                   </div>
-                  <div className="flex justify-between text-xs text-slate-500">
+                  <div className="flex justify-between text-xs text-[#86868b]">
                     <span>
                       变更前{" "}
                       {formatAccountCents(change.beforeAmount, {
@@ -158,7 +158,7 @@ export default async function RecordsPage() {
                     </span>
                   </div>
                   {change.note ? (
-                    <p className="text-sm text-slate-600">{change.note}</p>
+                    <p className="text-sm text-[#3a3a3c]">{change.note}</p>
                   ) : null}
                 </CardContent>
               </Card>

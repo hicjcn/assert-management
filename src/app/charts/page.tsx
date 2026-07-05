@@ -8,7 +8,7 @@ export default async function ChartsPage() {
   return (
     <MobileShell title="图表">
       <Card>
-        <CardContent className="pt-5 text-sm text-slate-600">
+        <CardContent className="pt-5 text-sm text-[#3a3a3c]">
           这里将接入 ECharts，展示资产、负债和净资产的趋势、占比与排行榜。
         </CardContent>
       </Card>

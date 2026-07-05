@@ -15,13 +15,13 @@ export default async function LoginPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-md items-center px-5">
+    <main className="mx-auto flex min-h-screen w-full max-w-md items-center bg-[#f5f5f7] px-5">
       <Card className="w-full">
         <CardHeader>
-          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-slate-100">
-            <Lock className="h-5 w-5 text-slate-700" />
+          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-[#007aff]/10">
+            <Lock className="h-5 w-5 text-[#007aff]" />
           </div>
-          <CardTitle>登录资产管家</CardTitle>
+          <CardTitle className="text-base text-[#1d1d1f]">登录资产管家</CardTitle>
         </CardHeader>
         <CardContent>
           <form action={loginAction} className="space-y-4">
@@ -35,7 +35,7 @@ export default async function LoginPage() {
             <Button className="w-full" type="submit">
               登录
             </Button>
-            <p className="text-xs leading-5 text-slate-500">
+            <p className="text-xs leading-5 text-[#6e6e73]">
               首次部署时，第一个登录的用户名会自动创建为管理员账号。
             </p>
           </form>

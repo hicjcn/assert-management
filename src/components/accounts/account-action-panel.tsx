@@ -48,7 +48,7 @@ export function AccountActionPanel({
     <div className="space-y-3">
       <div className="flex justify-end gap-2">
         <button
-          className="inline-flex h-9 items-center justify-center gap-1 rounded-md bg-slate-100 px-3 text-xs font-medium text-slate-900 transition hover:bg-slate-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500"
+          className="inline-flex h-9 items-center justify-center gap-1 rounded-lg border border-white/70 bg-white/85 px-3 text-xs font-semibold text-[#1d1d1f] shadow-sm shadow-black/[0.04] transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007aff]"
           onClick={() => setActivePanel(activePanel === "info" ? null : "info")}
           type="button"
         >
@@ -56,7 +56,7 @@ export function AccountActionPanel({
           编辑信息
         </button>
         <button
-          className="inline-flex h-9 items-center justify-center gap-1 rounded-md bg-teal-600 px-3 text-xs font-medium text-white transition hover:bg-teal-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500"
+          className="inline-flex h-9 items-center justify-center gap-1 rounded-lg bg-[#007aff] px-3 text-xs font-semibold text-white shadow-sm shadow-[#007aff]/25 transition hover:bg-[#006ee6] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007aff]"
           onClick={() =>
             setActivePanel(activePanel === "balance" ? null : "balance")
           }
@@ -68,7 +68,7 @@ export function AccountActionPanel({
       </div>
 
       {activePanel === "balance" ? (
-        <div className="rounded-md border border-slate-100 bg-slate-50 p-3">
+        <div className="rounded-lg border border-white/70 bg-white/60 p-3 shadow-inner shadow-black/[0.02]">
           <CardTitle>更新余额</CardTitle>
           <form action={updateAccountAction} className="mt-3 space-y-3">
             <input name="accountId" type="hidden" value={accountId} />
@@ -96,7 +96,7 @@ export function AccountActionPanel({
       ) : null}
 
       {activePanel === "info" ? (
-        <div className="space-y-3 rounded-md border border-slate-100 bg-slate-50 p-3">
+        <div className="space-y-3 rounded-lg border border-white/70 bg-white/60 p-3 shadow-inner shadow-black/[0.02]">
           <CardTitle>编辑信息</CardTitle>
           <form action={updateAccountAction} className="mt-3 space-y-3">
             <input name="accountId" type="hidden" value={accountId} />
@@ -108,7 +108,7 @@ export function AccountActionPanel({
             />
             <Input defaultValue={name} name="name" placeholder="账户名称" required />
             <select
-              className="h-11 w-full rounded-md border border-slate-200 bg-white px-3 text-base outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+              className="h-11 w-full rounded-lg border border-white/70 bg-white/85 px-3 text-base text-[#1d1d1f] shadow-sm shadow-black/[0.03] outline-none transition focus:border-[#007aff] focus:ring-2 focus:ring-[#007aff]/15"
               defaultValue={category}
               name="category"
               required
@@ -123,7 +123,7 @@ export function AccountActionPanel({
               ))}
             </select>
             <select
-              className="h-11 w-full rounded-md border border-slate-200 bg-white px-3 text-base outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+              className="h-11 w-full rounded-lg border border-white/70 bg-white/85 px-3 text-base text-[#1d1d1f] shadow-sm shadow-black/[0.03] outline-none transition focus:border-[#007aff] focus:ring-2 focus:ring-[#007aff]/15"
               defaultValue={iconKey ?? ""}
               name="iconKey"
             >
@@ -135,9 +135,9 @@ export function AccountActionPanel({
               ))}
             </select>
             <Input defaultValue={note} name="note" placeholder="备注，可选" />
-            <label className="flex items-center gap-2 text-sm text-slate-600">
+            <label className="flex items-center gap-2 text-sm text-[#3a3a3c]">
               <input
-                className="h-4 w-4 rounded border-slate-300 text-teal-600"
+                className="h-4 w-4 rounded border-[#c7c7cc] text-[#007aff]"
                 defaultChecked={includeInStats}
                 name="includeInStats"
                 type="checkbox"

@@ -36,7 +36,7 @@ export function AccountChangeAmount({
         "inline-flex shrink-0 items-center justify-end gap-1 font-semibold",
         isIncome && "text-rose-600",
         isExpense && "text-emerald-600",
-        !isIncome && !isExpense && "text-slate-900",
+        !isIncome && !isExpense && "text-[#1d1d1f]",
         className,
       )}
     >

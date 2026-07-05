@@ -18,7 +18,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-md border-t border-slate-200 bg-white/95 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 backdrop-blur">
+    <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-md border-t border-white/70 bg-white/80 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 shadow-[0_-12px_28px_rgba(0,0,0,0.06)] backdrop-blur-xl">
       <div className="grid grid-cols-5 gap-1">
         {items.map((item) => {
           const active =
@@ -28,8 +28,8 @@ export function BottomNav() {
           return (
             <Link
               className={cn(
-                "flex h-12 flex-col items-center justify-center gap-1 rounded-md text-xs text-slate-500",
-                active && "bg-teal-50 text-teal-700",
+                "flex h-12 flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-[#86868b] transition",
+                active && "bg-[#007aff]/10 text-[#007aff]",
               )}
               href={item.href}
               key={item.href}

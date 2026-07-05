@@ -51,16 +51,16 @@ export default async function AccountsPage() {
   return (
     <MobileShell title="账户">
       <div className="space-y-4">
-        <details className="rounded-lg border border-slate-200 bg-white shadow-sm [&>summary::-webkit-details-marker]:hidden">
-          <summary className="flex h-12 cursor-pointer items-center justify-between px-4 text-sm font-medium text-slate-900">
+        <details className="rounded-lg border border-white/70 bg-white/80 shadow-[0_10px_30px_rgba(0,0,0,0.06)] backdrop-blur-xl [&>summary::-webkit-details-marker]:hidden">
+          <summary className="flex h-12 cursor-pointer items-center justify-between px-4 text-sm font-semibold text-[#1d1d1f]">
             <span>新增账户</span>
-            <Plus className="h-4 w-4 text-teal-600" />
+            <Plus className="h-4 w-4 text-[#007aff]" />
           </summary>
-          <div className="border-t border-slate-100 px-4 pb-4 pt-3">
+          <div className="border-t border-black/[0.06] px-4 pb-4 pt-3">
             <form action={createAccountAction} className="space-y-3">
               <Input name="name" placeholder="账户名称" required />
               <select
-                className="h-11 w-full rounded-md border border-slate-200 bg-white px-3 text-base outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+                className="h-11 w-full rounded-lg border border-white/70 bg-white/85 px-3 text-base text-[#1d1d1f] shadow-sm shadow-black/[0.03] outline-none transition focus:border-[#007aff] focus:ring-2 focus:ring-[#007aff]/15"
                 name="category"
                 required
               >
@@ -74,7 +74,7 @@ export default async function AccountsPage() {
                 ))}
               </select>
               <select
-                className="h-11 w-full rounded-md border border-slate-200 bg-white px-3 text-base outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+                className="h-11 w-full rounded-lg border border-white/70 bg-white/85 px-3 text-base text-[#1d1d1f] shadow-sm shadow-black/[0.03] outline-none transition focus:border-[#007aff] focus:ring-2 focus:ring-[#007aff]/15"
                 name="iconKey"
               >
                 <option value="">自动匹配图标</option>
@@ -91,9 +91,9 @@ export default async function AccountsPage() {
                 required
               />
               <Input name="note" placeholder="备注，可选" />
-              <label className="flex items-center gap-2 text-sm text-slate-600">
+              <label className="flex items-center gap-2 text-sm text-[#3a3a3c]">
                 <input
-                  className="h-4 w-4 rounded border-slate-300 text-teal-600"
+                  className="h-4 w-4 rounded border-[#c7c7cc] text-[#007aff]"
                   defaultChecked
                   name="includeInStats"
                   type="checkbox"
@@ -110,8 +110,8 @@ export default async function AccountsPage() {
 
         <div className="space-y-3">
           {accounts.length === 0 ? (
-            <Card className="overflow-hidden border-dashed border-slate-300 bg-white">
-              <CardContent className="flex items-center gap-3 pt-5 text-sm text-slate-600">
+            <Card className="overflow-hidden border-dashed border-[#c7c7cc]">
+              <CardContent className="flex items-center gap-3 pt-5 text-sm text-[#3a3a3c]">
                 <AccountMark category="debit_card" variant="soft" />
                 <span>还没有账户。新增后会同时生成一条初始金额记录。</span>
               </CardContent>
@@ -122,23 +122,23 @@ export default async function AccountsPage() {
 
               return (
                 <Card
-                  className={cn("overflow-hidden bg-white", visual.border)}
+                  className={cn("overflow-hidden", visual.border)}
                   key={group.category}
                 >
-                  <CardHeader className="relative flex flex-row items-center justify-between gap-3 bg-slate-50/70 pb-4">
+                  <CardHeader className="relative flex flex-row items-center justify-between gap-3 bg-white/55 pb-4">
                     <div className="flex min-w-0 items-center gap-3">
                       <AccountMark category={group.category} />
                       <div className="min-w-0">
                         <CardTitle className={cn("text-sm", visual.text)}>
                           {accountCategoryLabels[group.category]}
                         </CardTitle>
-                        <p className="mt-1 text-xs text-slate-500">
+                        <p className="mt-1 text-xs text-[#86868b]">
                           {group.items.length} 个账户
                         </p>
                       </div>
                     </div>
                     <div className="shrink-0 text-right">
-                      <p className="text-xs text-slate-500">小计</p>
+                      <p className="text-xs text-[#86868b]">小计</p>
                       <p
                         className={cn("text-base font-semibold", visual.amount)}
                       >
@@ -158,7 +158,7 @@ export default async function AccountsPage() {
                     <div className="space-y-2">
                       {group.items.map((account) => (
                         <Link
-                          className="flex min-h-20 items-center justify-between gap-3 rounded-md border border-slate-100 bg-white p-3 transition hover:border-slate-200 hover:bg-slate-50"
+                          className="flex min-h-20 items-center justify-between gap-3 rounded-lg border border-white/70 bg-white/70 p-3 shadow-sm shadow-black/[0.03] transition hover:bg-white"
                           href={`/accounts/${account.id}`}
                           key={account.id}
                         >
@@ -172,7 +172,7 @@ export default async function AccountsPage() {
                             />
                             <div className="min-w-0">
                               <div className="flex min-w-0 items-center gap-1.5">
-                                <p className="min-w-0 truncate font-medium text-slate-900">
+                                <p className="min-w-0 truncate font-medium text-[#1d1d1f]">
                                   {account.name}
                                 </p>
                                 <AccountTypeBadge
@@ -182,7 +182,7 @@ export default async function AccountsPage() {
                                   {accountTypeLabels[account.type]}
                                 </AccountTypeBadge>
                                 {!account.includeInStats ? (
-                                  <span className="inline-flex h-4 shrink-0 items-center rounded-full bg-slate-100 px-1 text-[9px] font-medium text-slate-500">
+                                  <span className="inline-flex h-4 shrink-0 items-center rounded-full bg-black/[0.05] px-1 text-[9px] font-medium text-[#6e6e73]">
                                     不计入统计
                                   </span>
                                 ) : null}
@@ -201,7 +201,7 @@ export default async function AccountsPage() {
                                 account,
                               )}
                             </p>
-                            <ChevronRight className="h-4 w-4 text-slate-400" />
+                            <ChevronRight className="h-4 w-4 text-[#c7c7cc]" />
                           </div>
                         </Link>
                       ))}

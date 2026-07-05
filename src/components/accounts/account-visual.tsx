@@ -96,7 +96,7 @@ const accountVisuals: Record<AccountCategory, AccountVisual> = {
 };
 
 const accountTypeTone: Record<AccountType, string> = {
-  asset: "bg-slate-900 text-white",
+  asset: "bg-[#1d1d1f] text-white",
   liability: "bg-rose-600 text-white",
 };
 
@@ -201,7 +201,7 @@ export function AccountMark({
     return (
       <span
         className={cn(
-          "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-white ring-1 ring-slate-200",
+          "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white/90 ring-1 ring-black/[0.08]",
           className,
         )}
       >
@@ -219,7 +219,7 @@ export function AccountMark({
   return (
     <span
       className={cn(
-        "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md",
+        "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg",
         variant === "solid" ? visual.surface : visual.softSurface,
         className,
       )}
