@@ -93,6 +93,11 @@ export default async function AccountDetailPage({
                     {accountCategoryLabels[account.category]}
                   </span>
                 </div>
+                {account.note ? (
+                  <p className="mt-3 line-clamp-2 text-sm leading-5 text-slate-600">
+                    {account.note}
+                  </p>
+                ) : null}
               </div>
               <div className="shrink-0 pt-1 text-right">
                 <p className="text-xs font-medium text-slate-500">当前金额</p>
@@ -106,40 +111,7 @@ export default async function AccountDetailPage({
             />
           </div>
 
-          <CardHeader>
-            <CardTitle>账户信息</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-md border border-slate-100 bg-slate-50 p-3">
-                <p className="text-xs text-slate-500">账户分类</p>
-                <p className="mt-1 font-medium text-slate-900">
-                  {accountCategoryLabels[account.category]}
-                </p>
-              </div>
-              <div className="rounded-md border border-slate-100 bg-slate-50 p-3">
-                <p className="text-xs text-slate-500">统计状态</p>
-                <p className="mt-1 font-medium text-slate-900">
-                  {account.includeInStats ? "计入统计" : "不计入统计"}
-                </p>
-              </div>
-            </div>
-            <div className="rounded-md border border-slate-100 bg-white p-3">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-medium text-slate-600">账户余额</p>
-                <p
-                  className={cn("shrink-0 text-lg font-semibold", visual.amount)}
-                >
-                  {formatAccountCents(account.currentAmount, account)}
-                </p>
-              </div>
-            </div>
-            {account.note ? (
-              <p className="rounded-md border border-slate-100 bg-slate-50 p-3 text-sm text-slate-600">
-                {account.note}
-              </p>
-            ) : null}
-
+          <CardContent className="space-y-3 pt-4">
             <AccountActionPanel
               accountId={account.id}
               amountInputValue={amountInputValue}

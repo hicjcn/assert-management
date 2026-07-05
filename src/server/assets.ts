@@ -158,7 +158,7 @@ export async function createAccount(userId: string, formData: FormData) {
     iconKey: formData.get("iconKey") || undefined,
     currentAmount: formData.get("currentAmount"),
     includeInStats: formData.get("includeInStats") === "on",
-    note: formData.get("note") || undefined,
+    note: formData.get("note") ?? "",
   });
   const currentAmount = yuanToCents(parsed.currentAmount);
   const accountType = inferAccountType(parsed.category);
@@ -174,7 +174,7 @@ export async function createAccount(userId: string, formData: FormData) {
         iconKey: parsed.iconKey ?? null,
         currentAmount,
         includeInStats: parsed.includeInStats,
-        note: parsed.note,
+        note: parsed.note || null,
       },
     });
 
@@ -203,7 +203,7 @@ export async function updateAccount(userId: string, formData: FormData) {
     iconKey: formData.get("iconKey") || undefined,
     currentAmount: formData.get("currentAmount"),
     includeInStats: formData.get("includeInStats") === "on",
-    note: formData.get("note") || undefined,
+    note: formData.get("note") ?? "",
   });
   const currentAmount = yuanToCents(parsed.currentAmount);
   const accountCategory = accountCategoryToPrisma[parsed.category];
@@ -230,7 +230,7 @@ export async function updateAccount(userId: string, formData: FormData) {
         iconKey: parsed.iconKey ?? null,
         currentAmount,
         includeInStats: parsed.includeInStats,
-        note: parsed.note,
+        note: parsed.note || null,
       },
     });
 

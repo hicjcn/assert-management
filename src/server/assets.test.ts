@@ -376,7 +376,57 @@ describe("asset services", () => {
           iconKey: null,
           currentAmount: 100000n,
           includeInStats: false,
-          note: undefined,
+          note: null,
+        },
+      });
+      expect(tx.accountChange.create).not.toHaveBeenCalled();
+    });
+
+    it("clears the account note when the note field is emptied", async () => {
+      const tx = {
+        account: {
+          findFirst: vi.fn().mockResolvedValue({
+            id: "account-1",
+            userId: "user-1",
+            name: "建设银行",
+            category: AccountCategory.LIABILITY_ACCOUNT,
+            type: AccountType.LIABILITY,
+            currentAmount: 170000n,
+            includeInStats: false,
+            archived: false,
+            note: "原备注",
+            createdAt: new Date("2026-07-01T00:00:00.000Z"),
+            updatedAt: new Date("2026-07-01T00:00:00.000Z"),
+          }),
+          update: vi.fn(),
+        },
+        accountChange: {
+          create: vi.fn(),
+        },
+      };
+      prismaMock.$transaction.mockImplementation(async (callback) => callback(tx));
+
+      await updateAccount(
+        "user-1",
+        formData({
+          accountId: "account-1",
+          name: "建设银行",
+          category: "liability_account",
+          currentAmount: "1700",
+          note: "",
+        }),
+      );
+
+      expect(tx.account.update).toHaveBeenCalledWith({
+        where: { id: "account-1" },
+        data: {
+          name: "建设银行",
+          category: AccountCategory.LIABILITY_ACCOUNT,
+          type: AccountType.LIABILITY,
+          iconKey: null,
+          currentAmount: 170000n,
+          includeInStats: false,
+          note: null,
         },
       });
       expect(tx.accountChange.create).not.toHaveBeenCalled();
@@ -426,7 +476,7 @@ describe("asset services", () => {
           iconKey: null,
           currentAmount: 100000n,
           includeInStats: true,
-          note: undefined,
+          note: null,
         },
       });
       expect(tx.accountChange.create).not.toHaveBeenCalled();
