@@ -232,14 +232,20 @@ export function AccountMark({
 type AccountTypeBadgeProps = {
   type: AccountType;
   children: ReactNode;
+  className?: string;
 };
 
-export function AccountTypeBadge({ type, children }: AccountTypeBadgeProps) {
+export function AccountTypeBadge({
+  type,
+  children,
+  className,
+}: AccountTypeBadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex h-6 items-center rounded-full px-2 text-xs font-medium",
+        "inline-flex h-5 items-center rounded-full px-1.5 text-[10px] font-medium",
         accountTypeTone[type],
+        className,
       )}
     >
       {children}

@@ -72,21 +72,26 @@ export default async function AccountDetailPage({
                   iconKey={account.iconKey}
                   name={account.name}
                 />
-                <p className="truncate text-xl font-semibold text-slate-950">
-                  {account.name}
-                </p>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <AccountTypeBadge type={account.type}>
+                <div className="flex min-w-0 items-center gap-2">
+                  <p className="min-w-0 truncate text-xl font-semibold text-slate-950">
+                    {account.name}
+                  </p>
+                  <AccountTypeBadge
+                    className="h-4 shrink-0 px-1.5 text-[9px]"
+                    type={account.type}
+                  >
                     {accountTypeLabels[account.type]}
                   </AccountTypeBadge>
-                  <span className="inline-flex h-6 items-center rounded-full bg-white/80 px-2 text-xs font-medium text-slate-700">
-                    {accountCategoryLabels[account.category]}
-                  </span>
                   {!account.includeInStats ? (
-                    <span className="inline-flex h-6 items-center rounded-full bg-white/80 px-2 text-xs font-medium text-slate-500">
+                    <span className="inline-flex h-4 shrink-0 items-center rounded-full bg-white/80 px-1.5 text-[9px] font-medium text-slate-500">
                       不计入统计
                     </span>
                   ) : null}
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <span className="inline-flex h-6 items-center rounded-full bg-white/80 px-2 text-xs font-medium text-slate-700">
+                    {accountCategoryLabels[account.category]}
+                  </span>
                 </div>
               </div>
               <div className="shrink-0 pt-1 text-right">

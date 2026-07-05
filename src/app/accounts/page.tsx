@@ -171,15 +171,18 @@ export default async function AccountsPage() {
                               variant="soft"
                             />
                             <div className="min-w-0">
-                              <p className="truncate font-medium text-slate-900">
-                                {account.name}
-                              </p>
-                              <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                                <AccountTypeBadge type={account.type}>
+                              <div className="flex min-w-0 items-center gap-1.5">
+                                <p className="min-w-0 truncate font-medium text-slate-900">
+                                  {account.name}
+                                </p>
+                                <AccountTypeBadge
+                                  className="h-4 shrink-0 px-1 text-[9px]"
+                                  type={account.type}
+                                >
                                   {accountTypeLabels[account.type]}
                                 </AccountTypeBadge>
                                 {!account.includeInStats ? (
-                                  <span className="inline-flex h-6 items-center rounded-full bg-slate-100 px-2 text-xs font-medium text-slate-500">
+                                  <span className="inline-flex h-4 shrink-0 items-center rounded-full bg-slate-100 px-1 text-[9px] font-medium text-slate-500">
                                     不计入统计
                                   </span>
                                 ) : null}
