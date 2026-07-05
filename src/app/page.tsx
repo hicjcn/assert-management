@@ -113,7 +113,7 @@ export default async function Home() {
                     {primaryGoal.projection.progressPercent.toFixed(1)}%
                   </span>
                   <span className="font-semibold text-[#1d1d1f]">
-                    {formatCents(primaryGoal.projection.remainingAmount)}
+                    剩余 {formatCents(primaryGoal.projection.remainingAmount)}
                   </span>
                 </div>
               </CardContent>
