@@ -97,7 +97,7 @@ export default async function Home() {
         </div>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-3">
             <CardTitle>最近变更</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">

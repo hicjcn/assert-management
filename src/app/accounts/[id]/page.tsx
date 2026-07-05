@@ -127,7 +127,7 @@ export default async function AccountDetailPage({
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-3">
             <CardTitle>账户变更记录</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
