@@ -554,7 +554,7 @@ export function ChartsDashboard({ data }: ChartsDashboardProps) {
                 className={cn(
                   "h-10 rounded-lg text-sm font-semibold transition",
                   mode === value
-                    ? "shadow-[0_8px_18px_rgba(84,181,255,0.18)] ring-1 ring-white/90"
+                    ? "shadow-[0_8px_18px_rgba(31,41,55,0.12)]"
                     : "bg-white/85 text-[#596573] ring-1 ring-[#e1e9f1]",
                 )}
                 key={value}
