@@ -294,6 +294,7 @@ describe("asset services", () => {
         formData({
           accountId: "account-1",
           name: "工资卡",
+          category: "debit_card",
           currentAmount: "1200",
           includeInStats: "on",
           note: "主账户",
@@ -307,6 +308,8 @@ describe("asset services", () => {
         where: { id: "account-1" },
         data: {
           name: "工资卡",
+          category: AccountCategory.DEBIT_CARD,
+          type: AccountType.ASSET,
           currentAmount: 120000n,
           includeInStats: true,
           note: "主账户",
@@ -357,6 +360,7 @@ describe("asset services", () => {
         formData({
           accountId: "account-1",
           name: "新名称",
+          category: "cash",
           currentAmount: "1000",
         }),
       );
@@ -365,8 +369,59 @@ describe("asset services", () => {
         where: { id: "account-1" },
         data: {
           name: "新名称",
+          category: AccountCategory.CASH,
+          type: AccountType.ASSET,
           currentAmount: 100000n,
           includeInStats: false,
+          note: undefined,
+        },
+      });
+      expect(tx.accountChange.create).not.toHaveBeenCalled();
+    });
+
+    it("updates account category and infers the account type", async () => {
+      const tx = {
+        account: {
+          findFirst: vi.fn().mockResolvedValue({
+            id: "account-1",
+            userId: "user-1",
+            name: "消费账户",
+            category: AccountCategory.DEBIT_CARD,
+            type: AccountType.ASSET,
+            currentAmount: 100000n,
+            includeInStats: true,
+            archived: false,
+            note: null,
+            createdAt: new Date("2026-07-01T00:00:00.000Z"),
+            updatedAt: new Date("2026-07-01T00:00:00.000Z"),
+          }),
+          update: vi.fn(),
+        },
+        accountChange: {
+          create: vi.fn(),
+        },
+      };
+      prismaMock.$transaction.mockImplementation(async (callback) => callback(tx));
+
+      await updateAccount(
+        "user-1",
+        formData({
+          accountId: "account-1",
+          name: "信用卡",
+          category: "credit_card",
+          currentAmount: "1000",
+          includeInStats: "on",
+        }),
+      );
+
+      expect(tx.account.update).toHaveBeenCalledWith({
+        where: { id: "account-1" },
+        data: {
+          name: "信用卡",
+          category: AccountCategory.CREDIT_CARD,
+          type: AccountType.LIABILITY,
+          currentAmount: 100000n,
+          includeInStats: true,
           note: undefined,
         },
       });

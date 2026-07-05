@@ -2,7 +2,7 @@ import { MobileShell } from "@/components/layout/mobile-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { formatAccountCents } from "@/lib/money";
+import { formatAccountCents, formatAccountChangeCents } from "@/lib/money";
 import {
   listAccountChanges,
   listAccounts,
@@ -120,11 +120,9 @@ export default async function RecordsPage() {
                       </p>
                     </div>
                     <p className="shrink-0 font-semibold">
-                      {formatAccountCents(
-                        change.changeAmount,
-                        { category: change.category },
-                        { signed: true },
-                      )}
+                      {formatAccountChangeCents(change, {
+                        category: change.category,
+                      })}
                     </p>
                   </div>
                   <div className="flex justify-between text-xs text-slate-500">

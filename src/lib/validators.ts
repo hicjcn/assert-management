@@ -19,6 +19,7 @@ export const accountSchema = z.object({
 export const accountUpdateSchema = z.object({
   accountId: z.string().min(1, "请选择账户"),
   name: z.string().trim().min(1, "请输入账户名称"),
+  category: z.enum(accountCategoryValues),
   currentAmount: moneyString,
   includeInStats: z.boolean().default(true),
   note: z.string().trim().optional(),

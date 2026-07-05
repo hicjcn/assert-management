@@ -5,7 +5,7 @@ import { logoutAction } from "@/app/actions";
 import { MobileShell } from "@/components/layout/mobile-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatAccountCents, formatCents } from "@/lib/money";
+import { formatAccountChangeCents, formatCents } from "@/lib/money";
 import { changeTypeLabels } from "@/types/domain";
 import { getDashboard } from "@/server/assets";
 import { requireSession } from "@/server/auth";
@@ -98,11 +98,9 @@ export default async function Home() {
                     </p>
                   </div>
                   <p className="shrink-0 font-semibold">
-                    {formatAccountCents(
-                      change.changeAmount,
-                      { category: change.category },
-                      { signed: true },
-                    )}
+                    {formatAccountChangeCents(change, {
+                      category: change.category,
+                    })}
                   </p>
                 </div>
               ))

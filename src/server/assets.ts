@@ -194,11 +194,14 @@ export async function updateAccount(userId: string, formData: FormData) {
   const parsed = accountUpdateSchema.parse({
     accountId: formData.get("accountId"),
     name: formData.get("name"),
+    category: formData.get("category"),
     currentAmount: formData.get("currentAmount"),
     includeInStats: formData.get("includeInStats") === "on",
     note: formData.get("note") || undefined,
   });
   const currentAmount = yuanToCents(parsed.currentAmount);
+  const accountCategory = accountCategoryToPrisma[parsed.category];
+  const accountType = inferAccountType(parsed.category);
   const now = new Date();
 
   await prisma.$transaction(async (tx) => {
@@ -216,6 +219,8 @@ export async function updateAccount(userId: string, formData: FormData) {
       where: { id: account.id },
       data: {
         name: parsed.name,
+        category: accountCategory,
+        type: accountType,
         currentAmount,
         includeInStats: parsed.includeInStats,
         note: parsed.note,
@@ -228,7 +233,7 @@ export async function updateAccount(userId: string, formData: FormData) {
           userId,
           accountId: account.id,
           accountNameSnapshot: parsed.name,
-          categorySnapshot: account.category,
+          categorySnapshot: accountCategory,
           type: ChangeType.SET,
           beforeAmount: account.currentAmount,
           changeAmount,

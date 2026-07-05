@@ -1,4 +1,4 @@
-import type { AccountCategory, AccountType } from "@/types/domain";
+import type { AccountCategory, AccountType, ChangeType } from "@/types/domain";
 
 const MONEY_PATTERN = /^-?\d+(\.\d{0,2})?$/;
 const negativeAssetCategories = new Set<AccountCategory>([
@@ -53,4 +53,19 @@ export function formatAccountCents(
   options: { signed?: boolean } = {},
 ) {
   return formatCents(toAccountDisplayCents(value, account), options);
+}
+
+export function formatAccountChangeCents(
+  change: {
+    type: ChangeType;
+    changeAmount: bigint | number;
+    afterAmount: bigint | number;
+  },
+  account: { category?: AccountCategory; type?: AccountType },
+) {
+  if (change.type === "set") {
+    return formatAccountCents(change.afterAmount, account);
+  }
+
+  return formatAccountCents(change.changeAmount, account, { signed: true });
 }

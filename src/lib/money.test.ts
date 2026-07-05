@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { formatAccountCents, formatCents, yuanToCents } from "@/lib/money";
+import {
+  formatAccountCents,
+  formatAccountChangeCents,
+  formatCents,
+  yuanToCents,
+} from "@/lib/money";
 
 describe("money helpers", () => {
   it("converts yuan strings to integer cents", () => {
@@ -25,5 +30,20 @@ describe("money helpers", () => {
     expect(formatAccountCents(100000n, { category: "debit_card" })).toBe(
       "¥1,000",
     );
+  });
+
+  it("formats set changes as the resulting balance and delta changes as signed amounts", () => {
+    expect(
+      formatAccountChangeCents(
+        { type: "set", changeAmount: -20000n, afterAmount: 80000n },
+        { category: "debit_card" },
+      ),
+    ).toBe("¥800");
+    expect(
+      formatAccountChangeCents(
+        { type: "increase", changeAmount: 2500n, afterAmount: 102500n },
+        { category: "debit_card" },
+      ),
+    ).toBe("+¥25");
   });
 });

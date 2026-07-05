@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { AccountActionPanel } from "@/components/accounts/account-action-panel";
 import { MobileShell } from "@/components/layout/mobile-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatAccountCents } from "@/lib/money";
+import { formatAccountCents, formatAccountChangeCents } from "@/lib/money";
 import { getAccount, listAccountChanges } from "@/server/assets";
 import { requireSession } from "@/server/auth";
 import {
@@ -84,6 +84,7 @@ export default async function AccountDetailPage({
             <AccountActionPanel
               accountId={account.id}
               amountInputValue={amountInputValue}
+              category={account.category}
               includeInStats={account.includeInStats}
               name={account.name}
               note={account.note ?? ""}
@@ -120,11 +121,9 @@ export default async function AccountDetailPage({
                       </p>
                     </div>
                     <p className="shrink-0 font-semibold">
-                      {formatAccountCents(
-                        change.changeAmount,
-                        { category: change.category },
-                        { signed: true },
-                      )}
+                      {formatAccountChangeCents(change, {
+                        category: change.category,
+                      })}
                     </p>
                   </div>
                   <div className="flex justify-between text-xs text-slate-500">

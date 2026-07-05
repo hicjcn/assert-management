@@ -10,12 +10,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  type AccountCategory,
+  accountCategoryDescriptions,
+  accountCategoryLabels,
+  accountCategoryValues,
+} from "@/types/domain";
 
 type ActivePanel = "balance" | "info" | null;
 
 type AccountActionPanelProps = {
   accountId: string;
   amountInputValue: string;
+  category: AccountCategory;
   includeInStats: boolean;
   name: string;
   note: string;
@@ -25,6 +32,7 @@ type AccountActionPanelProps = {
 export function AccountActionPanel({
   accountId,
   amountInputValue,
+  category,
   includeInStats,
   name,
   note,
@@ -62,6 +70,7 @@ export function AccountActionPanel({
             <input name="accountId" type="hidden" value={accountId} />
             <input name="redirectTo" type="hidden" value={redirectTo} />
             <input name="name" type="hidden" value={name} />
+            <input name="category" type="hidden" value={category} />
             <input name="note" type="hidden" value={note} />
             {includeInStats ? (
               <input name="includeInStats" type="hidden" value="on" />
@@ -93,6 +102,21 @@ export function AccountActionPanel({
               value={amountInputValue}
             />
             <Input defaultValue={name} name="name" placeholder="账户名称" required />
+            <select
+              className="h-11 w-full rounded-md border border-slate-200 bg-white px-3 text-base outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+              defaultValue={category}
+              name="category"
+              required
+            >
+              {accountCategoryValues.map((categoryValue) => (
+                <option key={categoryValue} value={categoryValue}>
+                  {accountCategoryLabels[categoryValue]}
+                  {accountCategoryDescriptions[categoryValue]
+                    ? `（${accountCategoryDescriptions[categoryValue]}）`
+                    : ""}
+                </option>
+              ))}
+            </select>
             <Input defaultValue={note} name="note" placeholder="备注，可选" />
             <label className="flex items-center gap-2 text-sm text-slate-600">
               <input
