@@ -1,0 +1,41 @@
+import { z } from "zod";
+
+import { accountCategoryValues, accountTypeValues, changeTypeValues } from "@/types/domain";
+
+const moneyString = z
+  .string()
+  .trim()
+  .min(1, "请输入金额")
+  .regex(/^-?\d+(\.\d{0,2})?$/, "金额最多保留两位小数");
+
+export const accountSchema = z.object({
+  name: z.string().trim().min(1, "请输入账户名称"),
+  category: z.enum(accountCategoryValues),
+  type: z.enum(accountTypeValues),
+  currentAmount: moneyString,
+  includeInStats: z.boolean().default(true),
+  note: z.string().trim().optional(),
+});
+
+export const accountChangeSchema = z.object({
+  accountId: z.string().min(1, "请选择账户"),
+  type: z.enum(changeTypeValues),
+  amount: moneyString,
+  changedAt: z.string().min(1, "请选择变更时间"),
+  note: z.string().trim().optional(),
+});
+
+export const goalSchema = z.object({
+  name: z.string().trim().min(1, "请输入目标名称"),
+  targetAmount: moneyString,
+  currentAmount: moneyString,
+  monthlyIncome: moneyString,
+  monthlyRent: moneyString,
+  monthlyFood: moneyString,
+  monthlyLiving: moneyString,
+  monthlyOtherExpense: moneyString,
+  monthlyOtherIncome: moneyString,
+  oneTimeIncome: moneyString,
+  oneTimeExpense: moneyString,
+  note: z.string().trim().optional(),
+});

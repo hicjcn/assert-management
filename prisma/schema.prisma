@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum AccountType {
+  ASSET
+  LIABILITY
+}
+
+enum AccountCategory {
+  CASH
+  DEBIT_CARD
+  CREDIT_CARD
+  VIRTUAL_ACCOUNT
+  INVESTMENT
+  LIABILITY_ACCOUNT
+  BOND
+}
+
+enum ChangeType {
+  INITIAL
+  INCREASE
+  DECREASE
+  SET
+  CORRECTION
+}
+
+model User {
+  id           String          @id @default(cuid())
+  username     String          @unique
+  passwordHash String          @map("password_hash")
+  accounts     Account[]
+  changes      AccountChange[]
+  goals        Goal[]
+  settings     Setting[]
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Account {
+  id             String          @id @default(cuid())
+  userId         String          @map("user_id")
+  name           String
+  category       AccountCategory
+  type           AccountType     @map("account_type")
+  currentAmount  BigInt          @default(0) @map("current_amount")
+  includeInStats Boolean         @default(true) @map("include_in_stats")
+  archived       Boolean         @default(false)
+  note           String?         @db.Text
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  changes        AccountChange[]
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([category])
+  @@index([archived])
+  @@map("accounts")
+}
+
+model AccountChange {
+  id                  String          @id @default(cuid())
+  userId              String          @map("user_id")
+  accountId           String          @map("account_id")
+  accountNameSnapshot String          @map("account_name_snapshot")
+  categorySnapshot    AccountCategory @map("category_snapshot")
+  type                ChangeType      @map("change_type")
+  beforeAmount        BigInt          @map("before_amount")
+  changeAmount        BigInt          @map("change_amount")
+  afterAmount         BigInt          @map("after_amount")
+  note                String?         @db.Text
+  changedAt           DateTime        @map("changed_at")
+  createdAt           DateTime        @default(now()) @map("created_at")
+  user                User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account             Account         @relation(fields: [accountId], references: [id], onDelete: Restrict)
+
+  @@index([userId, changedAt])
+  @@index([accountId])
+  @@index([type])
+  @@map("account_changes")
+}
+
+model Goal {
+  id                  String   @id @default(cuid())
+  userId              String   @map("user_id")
+  name                String
+  targetAmount        BigInt   @map("target_amount")
+  currentAmount       BigInt   @default(0) @map("current_amount")
+  monthlyIncome       BigInt   @default(0) @map("monthly_income")
+  monthlyRent         BigInt   @default(0) @map("monthly_rent")
+  monthlyFood         BigInt   @default(0) @map("monthly_food")
+  monthlyLiving       BigInt   @default(0) @map("monthly_living")
+  monthlyOtherExpense BigInt   @default(0) @map("monthly_other_expense")
+  monthlyOtherIncome  BigInt   @default(0) @map("monthly_other_income")
+  oneTimeIncome       BigInt   @default(0) @map("one_time_income")
+  oneTimeExpense      BigInt   @default(0) @map("one_time_expense")
+  note                String?  @db.Text
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("goals")
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  key       String
+  value     String   @db.Text
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, key])
+  @@map("settings")
+}
