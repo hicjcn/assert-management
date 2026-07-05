@@ -1,6 +1,6 @@
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 
-import { formatAccountChangeCents } from "@/lib/money";
+import { formatAccountChangeCents, toAccountDisplayCents } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import type { AccountCategory, AccountType, ChangeType } from "@/types/domain";
 
@@ -22,26 +22,25 @@ export function AccountChangeAmount({
   account,
   className,
 }: AccountChangeAmountProps) {
-  const changeAmount = BigInt(change.changeAmount);
-  const isIncrease =
-    change.type === "increase" ||
-    (change.type !== "decrease" && changeAmount > 0n);
-  const isDecrease =
-    change.type === "decrease" ||
-    (change.type !== "increase" && changeAmount < 0n);
-  const Icon = isDecrease ? ArrowDownRight : ArrowUpRight;
+  const displayChangeAmount = toAccountDisplayCents(
+    change.changeAmount,
+    account,
+  );
+  const isIncome = displayChangeAmount > 0n;
+  const isExpense = displayChangeAmount < 0n;
+  const Icon = isExpense ? ArrowDownRight : ArrowUpRight;
 
   return (
     <span
       className={cn(
         "inline-flex shrink-0 items-center justify-end gap-1 font-semibold",
-        isIncrease && "text-rose-600",
-        isDecrease && "text-emerald-600",
-        !isIncrease && !isDecrease && "text-slate-900",
+        isIncome && "text-rose-600",
+        isExpense && "text-emerald-600",
+        !isIncome && !isExpense && "text-slate-900",
         className,
       )}
     >
-      {(isIncrease || isDecrease) ? (
+      {(isIncome || isExpense) ? (
         <Icon className="h-4 w-4" />
       ) : null}
       {formatAccountChangeCents(change, account)}
