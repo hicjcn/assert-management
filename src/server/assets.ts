@@ -83,6 +83,7 @@ export async function getDashboard(userId: string) {
       id: change.id,
       accountName: change.accountNameSnapshot,
       category: accountCategoryFromPrisma[change.categorySnapshot],
+      iconKey: change.account.iconKey,
       type: changeTypeFromPrisma[change.type],
       changeAmount: change.changeAmount,
       afterAmount: change.afterAmount,
@@ -133,6 +134,7 @@ export async function getAccount(userId: string, accountId: string) {
 export async function listAccountChanges(userId: string, accountId?: string) {
   const changes = await prisma.accountChange.findMany({
     where: { userId, ...(accountId ? { accountId } : {}) },
+    include: { account: true },
     orderBy: { changedAt: "desc" },
     take: accountId ? 100 : 30,
   });
@@ -142,6 +144,7 @@ export async function listAccountChanges(userId: string, accountId?: string) {
     accountId: change.accountId,
     accountName: change.accountNameSnapshot,
     category: accountCategoryFromPrisma[change.categorySnapshot],
+    iconKey: change.account.iconKey,
     type: changeTypeFromPrisma[change.type],
     beforeAmount: change.beforeAmount,
     changeAmount: change.changeAmount,

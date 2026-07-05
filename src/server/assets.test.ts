@@ -586,6 +586,9 @@ describe("asset services", () => {
           afterAmount: 105000n,
           note: null,
           changedAt,
+          account: {
+            iconKey: "china_construction_bank",
+          },
         },
       ]);
 
@@ -595,6 +598,7 @@ describe("asset services", () => {
           accountId: "account-1",
           accountName: "工资卡",
           category: "debit_card",
+          iconKey: "china_construction_bank",
           type: "increase",
           beforeAmount: 100000n,
           changeAmount: 5000n,
@@ -605,6 +609,7 @@ describe("asset services", () => {
       ]);
       expect(prismaMock.accountChange.findMany).toHaveBeenCalledWith({
         where: { userId: "user-1" },
+        include: { account: true },
         orderBy: { changedAt: "desc" },
         take: 30,
       });
@@ -618,6 +623,7 @@ describe("asset services", () => {
       ).resolves.toEqual([]);
       expect(prismaMock.accountChange.findMany).toHaveBeenCalledWith({
         where: { userId: "user-1", accountId: "account-1" },
+        include: { account: true },
         orderBy: { changedAt: "desc" },
         take: 100,
       });
@@ -662,6 +668,9 @@ describe("asset services", () => {
             id: "change-1",
             accountNameSnapshot: "工资卡",
             categorySnapshot: AccountCategory.DEBIT_CARD,
+            account: {
+              iconKey: "china_construction_bank",
+            },
             type: ChangeType.INCREASE,
             changeAmount: 10000n,
             afterAmount: 510000n,
@@ -705,6 +714,7 @@ describe("asset services", () => {
             id: "change-1",
             accountName: "工资卡",
             category: "debit_card",
+            iconKey: "china_construction_bank",
             type: "increase",
             changeAmount: 10000n,
             afterAmount: 510000n,

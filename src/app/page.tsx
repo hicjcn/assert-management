@@ -2,11 +2,13 @@ import { ArrowDownRight, ArrowUpRight, Landmark, Plus } from "lucide-react";
 import Link from "next/link";
 
 import { logoutAction } from "@/app/actions";
+import { AccountChangeAmount } from "@/components/accounts/account-change-amount";
+import { AccountMark } from "@/components/accounts/account-visual";
 import { MobileShell } from "@/components/layout/mobile-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatAccountChangeCents, formatCents } from "@/lib/money";
-import { changeTypeLabels } from "@/types/domain";
+import { formatCents } from "@/lib/money";
+import { accountCategoryLabels, changeTypeLabels } from "@/types/domain";
 import { getDashboard } from "@/server/assets";
 import { requireSession } from "@/server/auth";
 
@@ -83,25 +85,40 @@ export default async function Home() {
                   className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3 last:border-0 last:pb-0"
                   key={change.id}
                 >
-                  <div>
-                    <p className="font-medium text-slate-900">
-                      {change.accountName}
-                    </p>
-                    <p className="text-xs text-slate-500">
-                      {changeTypeLabels[change.type]} ·{" "}
-                      {change.changedAt.toLocaleString("zh-CN", {
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
+                  <div className="flex min-w-0 items-center gap-3">
+                    <AccountMark
+                      category={change.category}
+                      className="h-9 w-9"
+                      iconKey={change.iconKey}
+                      name={change.accountName}
+                      variant="soft"
+                    />
+                    <div className="min-w-0">
+                      <div className="flex min-w-0 items-center gap-1.5">
+                        <p className="min-w-0 truncate font-medium text-slate-900">
+                          {change.accountName}
+                        </p>
+                        <span className="inline-flex h-4 shrink-0 items-center rounded-full bg-slate-100 px-1 text-[9px] font-medium text-slate-500">
+                          {accountCategoryLabels[change.category]}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500">
+                        {changeTypeLabels[change.type]} ·{" "}
+                        {change.changedAt.toLocaleString("zh-CN", {
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
                   </div>
-                  <p className="shrink-0 font-semibold">
-                    {formatAccountChangeCents(change, {
+                  <AccountChangeAmount
+                    account={{
                       category: change.category,
-                    })}
-                  </p>
+                    }}
+                    change={change}
+                  />
                 </div>
               ))
             )}
