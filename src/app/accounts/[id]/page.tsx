@@ -1,12 +1,10 @@
-import { ArrowLeft, Pencil, Save, Trash2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { deleteAccountAction, updateAccountAction } from "@/app/actions";
+import { AccountActionPanel } from "@/components/accounts/account-action-panel";
 import { MobileShell } from "@/components/layout/mobile-shell";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { formatAccountCents } from "@/lib/money";
 import { getAccount, listAccountChanges } from "@/server/assets";
 import { requireSession } from "@/server/auth";
@@ -82,92 +80,17 @@ export default async function AccountDetailPage({
                 {account.note}
               </p>
             ) : null}
+
+            <AccountActionPanel
+              accountId={account.id}
+              amountInputValue={amountInputValue}
+              includeInStats={account.includeInStats}
+              name={account.name}
+              note={account.note ?? ""}
+              redirectTo={redirectTo}
+            />
           </CardContent>
         </Card>
-
-        <details className="rounded-lg border border-slate-200 bg-white shadow-sm [&>summary::-webkit-details-marker]:hidden">
-          <summary className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-md bg-teal-600 px-4 text-sm font-medium text-white transition hover:bg-teal-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500">
-            <Save className="h-4 w-4" />
-            更新余额
-          </summary>
-          <div className="border-t border-slate-100 px-4 pb-4 pt-3">
-            <CardTitle>更新余额</CardTitle>
-            <form action={updateAccountAction} className="mt-3 space-y-3">
-              <input name="accountId" type="hidden" value={account.id} />
-              <input name="redirectTo" type="hidden" value={redirectTo} />
-              <input name="name" type="hidden" value={account.name} />
-              <input name="note" type="hidden" value={account.note ?? ""} />
-              {account.includeInStats ? (
-                <input name="includeInStats" type="hidden" value="on" />
-              ) : null}
-              <Input
-                defaultValue={amountInputValue}
-                inputMode="decimal"
-                name="currentAmount"
-                placeholder="当前余额"
-                required
-              />
-              <Button className="w-full" type="submit">
-                <Save className="h-4 w-4" />
-                保存余额
-              </Button>
-            </form>
-          </div>
-        </details>
-
-        <details className="rounded-lg border border-slate-200 bg-white shadow-sm [&>summary::-webkit-details-marker]:hidden">
-          <summary className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-md bg-slate-100 px-4 text-sm font-medium text-slate-900 transition hover:bg-slate-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500">
-            <Pencil className="h-4 w-4" />
-            编辑信息
-          </summary>
-          <div className="space-y-3 border-t border-slate-100 px-4 pb-4 pt-3">
-            <CardTitle>编辑信息</CardTitle>
-            <form action={updateAccountAction} className="mt-3 space-y-3">
-              <input name="accountId" type="hidden" value={account.id} />
-              <input name="redirectTo" type="hidden" value={redirectTo} />
-              <input
-                name="currentAmount"
-                type="hidden"
-                value={amountInputValue}
-              />
-              <Input
-                defaultValue={account.name}
-                name="name"
-                placeholder="账户名称"
-                required
-              />
-              <Input
-                defaultValue={account.note ?? ""}
-                name="note"
-                placeholder="备注，可选"
-              />
-              <label className="flex items-center gap-2 text-sm text-slate-600">
-                <input
-                  className="h-4 w-4 rounded border-slate-300 text-teal-600"
-                  defaultChecked={account.includeInStats}
-                  name="includeInStats"
-                  type="checkbox"
-                />
-                计入首页资产统计
-              </label>
-              <Button className="w-full" type="submit">
-                <Save className="h-4 w-4" />
-                保存信息
-              </Button>
-            </form>
-            <form action={deleteAccountAction}>
-              <input name="accountId" type="hidden" value={account.id} />
-              <Button
-                className="w-full text-rose-600 hover:bg-rose-50"
-                type="submit"
-                variant="ghost"
-              >
-                <Trash2 className="h-4 w-4" />
-                删除账户
-              </Button>
-            </form>
-          </div>
-        </details>
 
         <Card>
           <CardHeader>
