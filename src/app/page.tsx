@@ -27,21 +27,21 @@ export default async function Home() {
   return (
     <MobileShell title="资产管家">
       <section className="space-y-4">
-        <Card className="overflow-hidden border-transparent bg-[#1d1d1f] text-white shadow-[0_18px_42px_rgba(0,0,0,0.18)]">
+        <Card className="overflow-hidden border-[#007aff]/10 bg-white/90 shadow-[0_14px_34px_rgba(0,122,255,0.10)]">
           <CardHeader className="flex flex-row items-start justify-between gap-4">
             <div>
-              <CardTitle className="text-white/70">净资产</CardTitle>
-              <p className="mt-1 text-xs text-white/55">资产实力概览</p>
+              <CardTitle>净资产</CardTitle>
+              <p className="mt-1 text-xs text-[#6e6e73]">资产实力概览</p>
             </div>
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#007aff] text-white shadow-sm shadow-[#007aff]/30">
               <TrendingUp className="h-5 w-5" />
             </span>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-semibold tracking-normal">
+            <p className="text-4xl font-semibold tracking-normal text-[#1d1d1f]">
               {formatCents(summary.netWorth)}
             </p>
-            <p className="mt-2 flex items-center gap-1 text-sm text-white/65">
+            <p className="mt-2 flex items-center gap-1 text-sm text-[#007aff]">
               <ArrowUpRight className="h-4 w-4" />
               本月变化 {formatCents(summary.monthlyChange, { signed: true })}
             </p>
