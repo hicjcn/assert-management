@@ -47,13 +47,20 @@ export const goalSchema = z.object({
   name: z.string().trim().min(1, "请输入目标名称"),
   targetAmount: moneyString,
   currentAmount: moneyString,
+  oneTimeIncome: moneyString,
+  oneTimeExpense: moneyString,
+  note: z.string().trim().optional(),
+});
+
+export const goalUpdateSchema = goalSchema.extend({
+  goalId: z.string().min(1, "请选择目标"),
+});
+
+export const goalBudgetSchema = z.object({
   monthlyIncome: moneyString,
   monthlyRent: moneyString,
   monthlyFood: moneyString,
   monthlyLiving: moneyString,
   monthlyOtherExpense: moneyString,
   monthlyOtherIncome: moneyString,
-  oneTimeIncome: moneyString,
-  oneTimeExpense: moneyString,
-  note: z.string().trim().optional(),
 });

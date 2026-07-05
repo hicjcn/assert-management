@@ -10,6 +10,7 @@ import {
   updateAccount,
 } from "@/server/assets";
 import { login, logout, requireSession } from "@/server/auth";
+import { createGoal, updateGoal, updateGoalBudget } from "@/server/goals";
 
 function redirectPath(formData: FormData, fallback: string) {
   const value = formData.get("redirectTo");
@@ -70,4 +71,31 @@ export async function createAccountChangeAction(formData: FormData) {
   revalidatePath("/accounts");
   revalidatePath("/records");
   redirect("/records");
+}
+
+export async function createGoalAction(formData: FormData) {
+  const session = await requireSession();
+
+  await createGoal(session.userId, formData);
+  revalidatePath("/");
+  revalidatePath("/goals");
+  redirect("/goals");
+}
+
+export async function updateGoalAction(formData: FormData) {
+  const session = await requireSession();
+
+  await updateGoal(session.userId, formData);
+  revalidatePath("/");
+  revalidatePath("/goals");
+  redirect("/goals");
+}
+
+export async function updateGoalBudgetAction(formData: FormData) {
+  const session = await requireSession();
+
+  await updateGoalBudget(session.userId, formData);
+  revalidatePath("/");
+  revalidatePath("/goals");
+  redirect("/goals");
 }

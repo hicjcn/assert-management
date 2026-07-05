@@ -89,23 +89,17 @@ model AccountChange {
 }
 
 model Goal {
-  id                  String   @id @default(cuid())
-  userId              String   @map("user_id")
-  name                String
-  targetAmount        BigInt   @map("target_amount")
-  currentAmount       BigInt   @default(0) @map("current_amount")
-  monthlyIncome       BigInt   @default(0) @map("monthly_income")
-  monthlyRent         BigInt   @default(0) @map("monthly_rent")
-  monthlyFood         BigInt   @default(0) @map("monthly_food")
-  monthlyLiving       BigInt   @default(0) @map("monthly_living")
-  monthlyOtherExpense BigInt   @default(0) @map("monthly_other_expense")
-  monthlyOtherIncome  BigInt   @default(0) @map("monthly_other_income")
-  oneTimeIncome       BigInt   @default(0) @map("one_time_income")
-  oneTimeExpense      BigInt   @default(0) @map("one_time_expense")
-  note                String?  @db.Text
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt           DateTime @default(now()) @map("created_at")
-  updatedAt           DateTime @updatedAt @map("updated_at")
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  name           String
+  targetAmount   BigInt   @map("target_amount")
+  currentAmount  BigInt   @default(0) @map("current_amount")
+  oneTimeIncome  BigInt   @default(0) @map("one_time_income")
+  oneTimeExpense BigInt   @default(0) @map("one_time_expense")
+  note           String?  @db.Text
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
   @@index([userId])
   @@map("goals")

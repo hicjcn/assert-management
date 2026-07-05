@@ -4,6 +4,7 @@ import {
   CreditCard,
   Landmark,
   Plus,
+  Target,
   TrendingUp,
   WalletCards,
 } from "lucide-react";
@@ -19,10 +20,15 @@ import { formatCents } from "@/lib/money";
 import { accountCategoryLabels, changeTypeLabels } from "@/types/domain";
 import { getDashboard } from "@/server/assets";
 import { requireSession } from "@/server/auth";
+import { listGoals } from "@/server/goals";
 
 export default async function Home() {
   const session = await requireSession();
-  const summary = await getDashboard(session.userId);
+  const [summary, goals] = await Promise.all([
+    getDashboard(session.userId),
+    listGoals(session.userId),
+  ]);
+  const primaryGoal = goals[0];
 
   return (
     <MobileShell title="资产管家">
@@ -78,6 +84,42 @@ export default async function Home() {
             </CardContent>
           </Card>
         </div>
+
+        {primaryGoal ? (
+          <Link href="/goals">
+            <Card>
+              <CardContent className="space-y-3 pt-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm text-[#6e6e73]">当前目标</p>
+                    <p className="mt-1 truncate text-lg font-semibold text-[#1d1d1f]">
+                      {primaryGoal.name}
+                    </p>
+                  </div>
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#34c759]/10 text-[#248a3d]">
+                    <Target className="h-5 w-5" />
+                  </span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-black/[0.06]">
+                  <div
+                    className="h-full rounded-full bg-[#34c759]"
+                    style={{
+                      width: `${primaryGoal.projection.progressPercent}%`,
+                    }}
+                  />
+                </div>
+                <div className="flex items-center justify-between gap-3 text-sm">
+                  <span className="text-[#6e6e73]">
+                    {primaryGoal.projection.progressPercent.toFixed(1)}%
+                  </span>
+                  <span className="font-semibold text-[#1d1d1f]">
+                    {formatCents(primaryGoal.projection.remainingAmount)}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        ) : null}
 
         <div className="grid grid-cols-2 gap-3">
           <Link
