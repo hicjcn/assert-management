@@ -1,18 +1,22 @@
 import { ArrowDownRight, ArrowUpRight, Landmark, Plus } from "lucide-react";
+import Link from "next/link";
 
+import { logoutAction } from "@/app/actions";
 import { MobileShell } from "@/components/layout/mobile-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCents } from "@/lib/money";
+import {
+  accountCategoryLabels,
+  changeTypeLabels,
+} from "@/types/domain";
+import { getDashboard } from "@/server/assets";
+import { requireSession } from "@/server/auth";
 
-const summary = {
-  assets: 128_560_00,
-  liabilities: 18_200_00,
-  netWorth: 110_360_00,
-  monthlyChange: 5_800_00,
-};
+export default async function Home() {
+  const session = await requireSession();
+  const summary = await getDashboard(session.userId);
 
-export default function Home() {
   return (
     <MobileShell title="资产管家">
       <section className="space-y-4">
@@ -53,25 +57,86 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <Button>
+          <Link
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-teal-600 px-4 text-sm font-medium text-white transition hover:bg-teal-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500"
+            href="/accounts"
+          >
             <Plus className="h-4 w-4" />
             新增账户
-          </Button>
-          <Button variant="secondary">
+          </Link>
+          <Link
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-slate-100 px-4 text-sm font-medium text-slate-900 transition hover:bg-slate-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500"
+            href="/records"
+          >
             <Landmark className="h-4 w-4" />
             记录变更
-          </Button>
+          </Link>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>第一版开发骨架</CardTitle>
+            <CardTitle>账户</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-slate-600">
-            <p>当前页面用于验证移动端布局、色彩和基础组件。</p>
-            <p>后续接入登录、Prisma、MySQL 和真实统计数据。</p>
+          <CardContent className="space-y-3 text-sm">
+            {summary.accounts.length === 0 ? (
+              <p className="text-slate-500">还没有账户，先新增一个资产账户。</p>
+            ) : (
+              summary.accounts.slice(0, 4).map((account) => (
+                <div
+                  className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3 last:border-0 last:pb-0"
+                  key={account.id}
+                >
+                  <div>
+                    <p className="font-medium text-slate-900">{account.name}</p>
+                    <p className="text-xs text-slate-500">
+                      {accountCategoryLabels[account.category]}
+                      {!account.includeInStats ? " · 不计入统计" : ""}
+                    </p>
+                  </div>
+                  <p className="shrink-0 font-semibold">
+                    {formatCents(account.currentAmount)}
+                  </p>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>最近变更</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            {summary.recentChanges.length === 0 ? (
+              <p className="text-slate-500">记录金额变化后，这里会显示流水。</p>
+            ) : (
+              summary.recentChanges.map((change) => (
+                <div
+                  className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3 last:border-0 last:pb-0"
+                  key={change.id}
+                >
+                  <div>
+                    <p className="font-medium text-slate-900">
+                      {change.accountName}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      {changeTypeLabels[change.type]}
+                    </p>
+                  </div>
+                  <p className="shrink-0 font-semibold">
+                    {formatCents(change.changeAmount, { signed: true })}
+                  </p>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+
+        <form action={logoutAction}>
+          <Button className="w-full" type="submit" variant="ghost">
+            退出登录
+          </Button>
+        </form>
       </section>
     </MobileShell>
   );

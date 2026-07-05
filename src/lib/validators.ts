@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { accountCategoryValues, accountTypeValues, changeTypeValues } from "@/types/domain";
+import { accountCategoryValues, changeTypeValues } from "@/types/domain";
 
 const moneyString = z
   .string()
@@ -11,7 +11,6 @@ const moneyString = z
 export const accountSchema = z.object({
   name: z.string().trim().min(1, "请输入账户名称"),
   category: z.enum(accountCategoryValues),
-  type: z.enum(accountTypeValues),
   currentAmount: moneyString,
   includeInStats: z.boolean().default(true),
   note: z.string().trim().optional(),
