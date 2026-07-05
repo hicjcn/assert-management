@@ -26,6 +26,7 @@ import {
   createAccount,
   createAccountChange,
   deleteAccount,
+  getAccount,
   getDashboard,
   listAccountChanges,
   listAccounts,
@@ -437,6 +438,31 @@ describe("asset services", () => {
       });
     });
 
+    it("maps a single account detail", async () => {
+      prismaMock.account.findFirst.mockResolvedValue({
+        id: "account-1",
+        name: "工资卡",
+        category: AccountCategory.DEBIT_CARD,
+        type: AccountType.ASSET,
+        currentAmount: 200000n,
+        includeInStats: true,
+        note: "主账户",
+      });
+
+      await expect(getAccount("user-1", "account-1")).resolves.toEqual({
+        id: "account-1",
+        name: "工资卡",
+        category: "debit_card",
+        type: "asset",
+        currentAmount: 200000n,
+        includeInStats: true,
+        note: "主账户",
+      });
+      expect(prismaMock.account.findFirst).toHaveBeenCalledWith({
+        where: { id: "account-1", userId: "user-1", archived: false },
+      });
+    });
+
     it("maps the latest account changes", async () => {
       const changedAt = new Date("2026-07-05T12:00:00.000Z");
       prismaMock.accountChange.findMany.mockResolvedValue([
@@ -472,6 +498,19 @@ describe("asset services", () => {
         where: { userId: "user-1" },
         orderBy: { changedAt: "desc" },
         take: 30,
+      });
+    });
+
+    it("can list changes for one account", async () => {
+      prismaMock.accountChange.findMany.mockResolvedValue([]);
+
+      await expect(
+        listAccountChanges("user-1", "account-1"),
+      ).resolves.toEqual([]);
+      expect(prismaMock.accountChange.findMany).toHaveBeenCalledWith({
+        where: { userId: "user-1", accountId: "account-1" },
+        orderBy: { changedAt: "desc" },
+        take: 100,
       });
     });
 

@@ -1,10 +1,7 @@
-import { Plus, Save, Trash2 } from "lucide-react";
+import { ChevronRight, Plus } from "lucide-react";
+import Link from "next/link";
 
-import {
-  createAccountAction,
-  deleteAccountAction,
-  updateAccountAction,
-} from "@/app/actions";
+import { createAccountAction } from "@/app/actions";
 import { MobileShell } from "@/components/layout/mobile-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,15 +16,6 @@ import {
   accountCategoryValues,
   accountTypeLabels,
 } from "@/types/domain";
-
-function formatCentsForInput(value: bigint | number) {
-  const cents = typeof value === "bigint" ? value : BigInt(value);
-  const negative = cents < 0n;
-  const absolute = negative ? -cents : cents;
-  const yuan = (absolute + 50n) / 100n;
-
-  return `${negative ? "-" : ""}${yuan.toString()}`;
-}
 
 export default async function AccountsPage() {
   const session = await requireSession();
@@ -127,82 +115,27 @@ export default async function AccountsPage() {
                 <CardContent className="pt-3">
                   <div className="divide-y divide-slate-100">
                     {group.items.map((account) => (
-                      <details
-                        className="py-3 first:pt-0 last:pb-0 [&>summary::-webkit-details-marker]:hidden"
+                      <Link
+                        className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
+                        href={`/accounts/${account.id}`}
                         key={account.id}
                       >
-                        <summary className="flex cursor-pointer items-center justify-between gap-3">
-                          <div>
-                            <p className="font-medium text-slate-900">
-                              {account.name}
-                            </p>
-                            <p className="mt-1 text-xs text-slate-500">
-                              {accountTypeLabels[account.type]}
-                              {!account.includeInStats ? " · 不计入统计" : ""}
-                            </p>
-                          </div>
-                          <p className="shrink-0 text-base font-semibold">
+                        <div>
+                          <p className="font-medium text-slate-900">
+                            {account.name}
+                          </p>
+                          <p className="mt-1 text-xs text-slate-500">
+                            {accountTypeLabels[account.type]}
+                            {!account.includeInStats ? " · 不计入统计" : ""}
+                          </p>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-2">
+                          <p className="text-base font-semibold">
                             {formatAccountCents(account.currentAmount, account)}
                           </p>
-                        </summary>
-                        <div className="mt-3 rounded-md bg-slate-50 p-3">
-                          <form action={updateAccountAction} className="space-y-3">
-                            <input
-                              name="accountId"
-                              type="hidden"
-                              value={account.id}
-                            />
-                            <Input
-                              defaultValue={account.name}
-                              name="name"
-                              placeholder="账户名称"
-                              required
-                            />
-                            <Input
-                              defaultValue={formatCentsForInput(
-                                account.currentAmount,
-                              )}
-                              inputMode="decimal"
-                              name="currentAmount"
-                              placeholder="当前余额"
-                              required
-                            />
-                            <Input
-                              defaultValue={account.note ?? ""}
-                              name="note"
-                              placeholder="备注，可选"
-                            />
-                            <label className="flex items-center gap-2 text-sm text-slate-600">
-                              <input
-                                className="h-4 w-4 rounded border-slate-300 text-teal-600"
-                                defaultChecked={account.includeInStats}
-                                name="includeInStats"
-                                type="checkbox"
-                              />
-                              计入首页资产统计
-                            </label>
-                            <Button className="w-full" type="submit">
-                              <Save className="h-4 w-4" />
-                              保存修改
-                            </Button>
-                          </form>
-                          <form action={deleteAccountAction} className="mt-2">
-                            <input
-                              name="accountId"
-                              type="hidden"
-                              value={account.id}
-                            />
-                            <Button
-                              className="w-full text-rose-600 hover:bg-rose-50"
-                              type="submit"
-                              variant="ghost"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                              删除账户
-                            </Button>
-                          </form>
+                          <ChevronRight className="h-4 w-4 text-slate-400" />
                         </div>
-                      </details>
+                      </Link>
                     ))}
                   </div>
                 </CardContent>

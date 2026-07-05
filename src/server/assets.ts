@@ -107,11 +107,31 @@ export async function listAccounts(userId: string) {
   }));
 }
 
-export async function listAccountChanges(userId: string) {
+export async function getAccount(userId: string, accountId: string) {
+  const account = await prisma.account.findFirst({
+    where: { id: accountId, userId, archived: false },
+  });
+
+  if (!account) {
+    return null;
+  }
+
+  return {
+    id: account.id,
+    name: account.name,
+    category: accountCategoryFromPrisma[account.category],
+    type: accountTypeFromPrisma[account.type],
+    currentAmount: account.currentAmount,
+    includeInStats: account.includeInStats,
+    note: account.note,
+  };
+}
+
+export async function listAccountChanges(userId: string, accountId?: string) {
   const changes = await prisma.accountChange.findMany({
-    where: { userId },
+    where: { userId, ...(accountId ? { accountId } : {}) },
     orderBy: { changedAt: "desc" },
-    take: 30,
+    take: accountId ? 100 : 30,
   });
 
   return changes.map((change) => ({

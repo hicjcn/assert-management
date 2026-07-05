@@ -11,6 +11,16 @@ import {
 } from "@/server/assets";
 import { login, logout, requireSession } from "@/server/auth";
 
+function redirectPath(formData: FormData, fallback: string) {
+  const value = formData.get("redirectTo");
+
+  if (typeof value === "string" && value.startsWith("/")) {
+    return value;
+  }
+
+  return fallback;
+}
+
 export async function loginAction(formData: FormData) {
   await login(String(formData.get("username") ?? ""), String(formData.get("password") ?? ""));
   redirect("/");
@@ -33,12 +43,13 @@ export async function createAccountAction(formData: FormData) {
 
 export async function updateAccountAction(formData: FormData) {
   const session = await requireSession();
+  const destination = redirectPath(formData, "/accounts");
 
   await updateAccount(session.userId, formData);
   revalidatePath("/");
   revalidatePath("/accounts");
   revalidatePath("/records");
-  redirect("/accounts");
+  redirect(destination);
 }
 
 export async function deleteAccountAction(formData: FormData) {
