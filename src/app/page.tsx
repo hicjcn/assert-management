@@ -86,7 +86,7 @@ export default async function Home() {
         </div>
 
         {primaryGoal ? (
-          <Link href="/goals">
+          <Link className="block" href="/goals">
             <Card>
               <CardContent className="space-y-3 pt-4">
                 <div className="flex items-start justify-between gap-3">
