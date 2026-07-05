@@ -56,6 +56,10 @@ export const goalUpdateSchema = goalSchema.extend({
   goalId: z.string().min(1, "请选择目标"),
 });
 
+export const goalDeleteSchema = z.object({
+  goalId: z.string().min(1, "请选择目标"),
+});
+
 export const goalBudgetSchema = z.object({
   monthlyIncome: moneyString,
   monthlyRent: moneyString,

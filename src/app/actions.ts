@@ -10,7 +10,12 @@ import {
   updateAccount,
 } from "@/server/assets";
 import { login, logout, requireSession } from "@/server/auth";
-import { createGoal, updateGoal, updateGoalBudget } from "@/server/goals";
+import {
+  createGoal,
+  deleteGoal,
+  updateGoal,
+  updateGoalBudget,
+} from "@/server/goals";
 
 function redirectPath(formData: FormData, fallback: string) {
   const value = formData.get("redirectTo");
@@ -86,6 +91,15 @@ export async function updateGoalAction(formData: FormData) {
   const session = await requireSession();
 
   await updateGoal(session.userId, formData);
+  revalidatePath("/");
+  revalidatePath("/goals");
+  redirect("/goals");
+}
+
+export async function deleteGoalAction(formData: FormData) {
+  const session = await requireSession();
+
+  await deleteGoal(session.userId, formData);
   revalidatePath("/");
   revalidatePath("/goals");
   redirect("/goals");

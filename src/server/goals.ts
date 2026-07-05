@@ -3,6 +3,7 @@ import "server-only";
 import { yuanToCents } from "@/lib/money";
 import {
   goalBudgetSchema,
+  goalDeleteSchema,
   goalSchema,
   goalUpdateSchema,
 } from "@/lib/validators";
@@ -302,6 +303,23 @@ export async function updateGoal(userId: string, formData: FormData) {
       ...amounts,
       note: parsed.note || null,
     },
+  });
+}
+
+export async function deleteGoal(userId: string, formData: FormData) {
+  const parsed = goalDeleteSchema.parse({
+    goalId: formData.get("goalId"),
+  });
+  const goal = await prisma.goal.findFirst({
+    where: { id: parsed.goalId, userId },
+  });
+
+  if (!goal) {
+    throw new Error("目标不存在");
+  }
+
+  await prisma.goal.delete({
+    where: { id: goal.id },
   });
 }
 
