@@ -5,11 +5,8 @@ import { logoutAction } from "@/app/actions";
 import { MobileShell } from "@/components/layout/mobile-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatCents } from "@/lib/money";
-import {
-  accountCategoryLabels,
-  changeTypeLabels,
-} from "@/types/domain";
+import { formatAccountCents, formatCents } from "@/lib/money";
+import { changeTypeLabels } from "@/types/domain";
 import { getDashboard } from "@/server/assets";
 import { requireSession } from "@/server/auth";
 
@@ -75,35 +72,6 @@ export default async function Home() {
 
         <Card>
           <CardHeader>
-            <CardTitle>账户</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            {summary.accounts.length === 0 ? (
-              <p className="text-slate-500">还没有账户，先新增一个资产账户。</p>
-            ) : (
-              summary.accounts.slice(0, 4).map((account) => (
-                <div
-                  className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3 last:border-0 last:pb-0"
-                  key={account.id}
-                >
-                  <div>
-                    <p className="font-medium text-slate-900">{account.name}</p>
-                    <p className="text-xs text-slate-500">
-                      {accountCategoryLabels[account.category]}
-                      {!account.includeInStats ? " · 不计入统计" : ""}
-                    </p>
-                  </div>
-                  <p className="shrink-0 font-semibold">
-                    {formatCents(account.currentAmount)}
-                  </p>
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
             <CardTitle>最近变更</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
@@ -120,11 +88,21 @@ export default async function Home() {
                       {change.accountName}
                     </p>
                     <p className="text-xs text-slate-500">
-                      {changeTypeLabels[change.type]}
+                      {changeTypeLabels[change.type]} ·{" "}
+                      {change.changedAt.toLocaleString("zh-CN", {
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </p>
                   </div>
                   <p className="shrink-0 font-semibold">
-                    {formatCents(change.changeAmount, { signed: true })}
+                    {formatAccountCents(
+                      change.changeAmount,
+                      { category: change.category },
+                      { signed: true },
+                    )}
                   </p>
                 </div>
               ))

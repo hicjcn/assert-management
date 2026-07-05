@@ -1,4 +1,10 @@
+import type { AccountCategory, AccountType } from "@/types/domain";
+
 const MONEY_PATTERN = /^-?\d+(\.\d{0,2})?$/;
+const negativeAssetCategories = new Set<AccountCategory>([
+  "credit_card",
+  "liability_account",
+]);
 
 export function yuanToCents(value: string | number): bigint {
   const normalized =
@@ -23,11 +29,28 @@ export function formatCents(
   const cents = typeof value === "bigint" ? value : BigInt(value);
   const negative = cents < 0n;
   const absolute = negative ? -cents : cents;
-  const yuan = absolute / 100n;
-  const fraction = absolute % 100n;
+  const yuan = (absolute + 50n) / 100n;
   const sign = negative ? "-" : options.signed && cents > 0n ? "+" : "";
 
-  return `${sign}¥${yuan.toLocaleString("zh-CN")}.${fraction
-    .toString()
-    .padStart(2, "0")}`;
+  return `${sign}¥${yuan.toLocaleString("zh-CN")}`;
+}
+
+export function toAccountDisplayCents(
+  value: bigint | number,
+  account: { category?: AccountCategory; type?: AccountType },
+) {
+  const cents = typeof value === "bigint" ? value : BigInt(value);
+  const isNegativeAsset =
+    account.type === "liability" ||
+    (account.category ? negativeAssetCategories.has(account.category) : false);
+
+  return isNegativeAsset ? -cents : cents;
+}
+
+export function formatAccountCents(
+  value: bigint | number,
+  account: { category?: AccountCategory; type?: AccountType },
+  options: { signed?: boolean } = {},
+) {
+  return formatCents(toAccountDisplayCents(value, account), options);
 }

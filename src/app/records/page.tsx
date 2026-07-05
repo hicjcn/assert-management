@@ -2,7 +2,7 @@ import { MobileShell } from "@/components/layout/mobile-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { formatCents } from "@/lib/money";
+import { formatAccountCents } from "@/lib/money";
 import {
   listAccountChanges,
   listAccounts,
@@ -44,7 +44,8 @@ export default async function RecordsPage() {
                 <option value="">选择账户</option>
                 {accounts.map((account) => (
                   <option key={account.id} value={account.id}>
-                    {account.name} · {formatCents(account.currentAmount)}
+                    {account.name} ·{" "}
+                    {formatAccountCents(account.currentAmount, account)}
                   </option>
                 ))}
               </select>
@@ -119,12 +120,26 @@ export default async function RecordsPage() {
                       </p>
                     </div>
                     <p className="shrink-0 font-semibold">
-                      {formatCents(change.changeAmount, { signed: true })}
+                      {formatAccountCents(
+                        change.changeAmount,
+                        { category: change.category },
+                        { signed: true },
+                      )}
                     </p>
                   </div>
                   <div className="flex justify-between text-xs text-slate-500">
-                    <span>变更前 {formatCents(change.beforeAmount)}</span>
-                    <span>变更后 {formatCents(change.afterAmount)}</span>
+                    <span>
+                      变更前{" "}
+                      {formatAccountCents(change.beforeAmount, {
+                        category: change.category,
+                      })}
+                    </span>
+                    <span>
+                      变更后{" "}
+                      {formatAccountCents(change.afterAmount, {
+                        category: change.category,
+                      })}
+                    </span>
                   </div>
                   {change.note ? (
                     <p className="text-sm text-slate-600">{change.note}</p>

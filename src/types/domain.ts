@@ -32,8 +32,18 @@ export const accountCategoryLabels: Record<AccountCategory, string> = {
   credit_card: "信用卡",
   virtual_account: "虚拟账户",
   investment: "投资账户",
-  liability_account: "负债账户",
-  bond: "债券账户",
+  liability_account: "借贷",
+  bond: "债权",
+};
+
+export const accountCategoryDescriptions: Partial<
+  Record<AccountCategory, string>
+> = {
+  credit_card: "信用卡、蚂蚁花呗、京东白条",
+  virtual_account: "支付宝、微信",
+  investment: "股票、基金、p2p",
+  liability_account: "贷款、借入",
+  bond: "应收、借出",
 };
 
 export const changeTypeLabels: Record<ChangeType, string> = {

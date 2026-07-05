@@ -2,7 +2,12 @@ import "server-only";
 
 import { AccountType, ChangeType } from "@/generated/prisma/enums";
 import { yuanToCents } from "@/lib/money";
-import { accountChangeSchema, accountSchema } from "@/lib/validators";
+import {
+  accountChangeSchema,
+  accountDeleteSchema,
+  accountSchema,
+  accountUpdateSchema,
+} from "@/lib/validators";
 import { prisma } from "@/server/db/prisma";
 import {
   accountCategoryFromPrisma,
@@ -76,6 +81,7 @@ export async function getDashboard(userId: string) {
     recentChanges: recentChanges.map((change) => ({
       id: change.id,
       accountName: change.accountNameSnapshot,
+      category: accountCategoryFromPrisma[change.categorySnapshot],
       type: changeTypeFromPrisma[change.type],
       changeAmount: change.changeAmount,
       afterAmount: change.afterAmount,
@@ -112,6 +118,7 @@ export async function listAccountChanges(userId: string) {
     id: change.id,
     accountId: change.accountId,
     accountName: change.accountNameSnapshot,
+    category: accountCategoryFromPrisma[change.categorySnapshot],
     type: changeTypeFromPrisma[change.type],
     beforeAmount: change.beforeAmount,
     changeAmount: change.changeAmount,
@@ -160,6 +167,76 @@ export async function createAccount(userId: string, formData: FormData) {
         changedAt: now,
       },
     });
+  });
+}
+
+export async function updateAccount(userId: string, formData: FormData) {
+  const parsed = accountUpdateSchema.parse({
+    accountId: formData.get("accountId"),
+    name: formData.get("name"),
+    currentAmount: formData.get("currentAmount"),
+    includeInStats: formData.get("includeInStats") === "on",
+    note: formData.get("note") || undefined,
+  });
+  const currentAmount = yuanToCents(parsed.currentAmount);
+  const now = new Date();
+
+  await prisma.$transaction(async (tx) => {
+    const account = await tx.account.findFirst({
+      where: { id: parsed.accountId, userId, archived: false },
+    });
+
+    if (!account) {
+      throw new Error("账户不存在");
+    }
+
+    const changeAmount = currentAmount - account.currentAmount;
+
+    await tx.account.update({
+      where: { id: account.id },
+      data: {
+        name: parsed.name,
+        currentAmount,
+        includeInStats: parsed.includeInStats,
+        note: parsed.note,
+      },
+    });
+
+    if (changeAmount !== 0n) {
+      await tx.accountChange.create({
+        data: {
+          userId,
+          accountId: account.id,
+          accountNameSnapshot: parsed.name,
+          categorySnapshot: account.category,
+          type: ChangeType.SET,
+          beforeAmount: account.currentAmount,
+          changeAmount,
+          afterAmount: currentAmount,
+          note: "更新账户金额",
+          changedAt: now,
+        },
+      });
+    }
+  });
+}
+
+export async function deleteAccount(userId: string, formData: FormData) {
+  const parsed = accountDeleteSchema.parse({
+    accountId: formData.get("accountId"),
+  });
+
+  const account = await prisma.account.findFirst({
+    where: { id: parsed.accountId, userId, archived: false },
+  });
+
+  if (!account) {
+    throw new Error("账户不存在");
+  }
+
+  await prisma.account.update({
+    where: { id: account.id },
+    data: { archived: true, includeInStats: false },
   });
 }
 

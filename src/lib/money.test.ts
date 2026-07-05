@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatCents, yuanToCents } from "@/lib/money";
+import { formatAccountCents, formatCents, yuanToCents } from "@/lib/money";
 
 describe("money helpers", () => {
   it("converts yuan strings to integer cents", () => {
@@ -8,8 +8,22 @@ describe("money helpers", () => {
     expect(yuanToCents("-8.5")).toBe(-850n);
   });
 
-  it("formats cents as CNY", () => {
-    expect(formatCents(1234567n)).toBe("¥12,345.67");
-    expect(formatCents(500n, { signed: true })).toBe("+¥5.00");
+  it("formats cents as whole-yuan CNY", () => {
+    expect(formatCents(1234567n)).toBe("¥12,346");
+    expect(formatCents(500n, { signed: true })).toBe("+¥5");
+    expect(formatCents(-12345n)).toBe("-¥123");
+  });
+
+  it("formats negative asset account amounts as negative", () => {
+    expect(formatAccountCents(30000n, { category: "credit_card" })).toBe(
+      "-¥300",
+    );
+    expect(formatAccountCents(100000n, { category: "liability_account" })).toBe(
+      "-¥1,000",
+    );
+    expect(formatAccountCents(100000n, { type: "liability" })).toBe("-¥1,000");
+    expect(formatAccountCents(100000n, { category: "debit_card" })).toBe(
+      "¥1,000",
+    );
   });
 });

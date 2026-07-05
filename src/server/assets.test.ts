@@ -9,7 +9,9 @@ import {
 const prismaMock = vi.hoisted(() => ({
   $transaction: vi.fn(),
   account: {
+    findFirst: vi.fn(),
     findMany: vi.fn(),
+    update: vi.fn(),
   },
   accountChange: {
     findMany: vi.fn(),
@@ -23,9 +25,11 @@ vi.mock("@/server/db/prisma", () => ({
 import {
   createAccount,
   createAccountChange,
+  deleteAccount,
   getDashboard,
   listAccountChanges,
   listAccounts,
+  updateAccount,
 } from "@/server/assets";
 
 function formData(values: Record<string, string | undefined>) {
@@ -254,6 +258,154 @@ describe("asset services", () => {
     });
   });
 
+  describe("updateAccount", () => {
+    it("updates account details and records a set change when amount changes", async () => {
+      const now = new Date("2026-07-05T14:00:00.000Z");
+      vi.useFakeTimers();
+      vi.setSystemTime(now);
+
+      const account = {
+        id: "account-1",
+        userId: "user-1",
+        name: "旧工资卡",
+        category: AccountCategory.DEBIT_CARD,
+        type: AccountType.ASSET,
+        currentAmount: 100000n,
+        includeInStats: true,
+        archived: false,
+        note: null,
+        createdAt: new Date("2026-07-01T00:00:00.000Z"),
+        updatedAt: new Date("2026-07-01T00:00:00.000Z"),
+      };
+      const tx = {
+        account: {
+          findFirst: vi.fn().mockResolvedValue(account),
+          update: vi.fn(),
+        },
+        accountChange: {
+          create: vi.fn(),
+        },
+      };
+      prismaMock.$transaction.mockImplementation(async (callback) => callback(tx));
+
+      await updateAccount(
+        "user-1",
+        formData({
+          accountId: "account-1",
+          name: "工资卡",
+          currentAmount: "1200",
+          includeInStats: "on",
+          note: "主账户",
+        }),
+      );
+
+      expect(tx.account.findFirst).toHaveBeenCalledWith({
+        where: { id: "account-1", userId: "user-1", archived: false },
+      });
+      expect(tx.account.update).toHaveBeenCalledWith({
+        where: { id: "account-1" },
+        data: {
+          name: "工资卡",
+          currentAmount: 120000n,
+          includeInStats: true,
+          note: "主账户",
+        },
+      });
+      expect(tx.accountChange.create).toHaveBeenCalledWith({
+        data: {
+          userId: "user-1",
+          accountId: "account-1",
+          accountNameSnapshot: "工资卡",
+          categorySnapshot: AccountCategory.DEBIT_CARD,
+          type: ChangeType.SET,
+          beforeAmount: 100000n,
+          changeAmount: 20000n,
+          afterAmount: 120000n,
+          note: "更新账户金额",
+          changedAt: now,
+        },
+      });
+    });
+
+    it("updates account details without a change record when amount is unchanged", async () => {
+      const tx = {
+        account: {
+          findFirst: vi.fn().mockResolvedValue({
+            id: "account-1",
+            userId: "user-1",
+            name: "旧名称",
+            category: AccountCategory.CASH,
+            type: AccountType.ASSET,
+            currentAmount: 100000n,
+            includeInStats: true,
+            archived: false,
+            note: null,
+            createdAt: new Date("2026-07-01T00:00:00.000Z"),
+            updatedAt: new Date("2026-07-01T00:00:00.000Z"),
+          }),
+          update: vi.fn(),
+        },
+        accountChange: {
+          create: vi.fn(),
+        },
+      };
+      prismaMock.$transaction.mockImplementation(async (callback) => callback(tx));
+
+      await updateAccount(
+        "user-1",
+        formData({
+          accountId: "account-1",
+          name: "新名称",
+          currentAmount: "1000",
+        }),
+      );
+
+      expect(tx.account.update).toHaveBeenCalledWith({
+        where: { id: "account-1" },
+        data: {
+          name: "新名称",
+          currentAmount: 100000n,
+          includeInStats: false,
+          note: undefined,
+        },
+      });
+      expect(tx.accountChange.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("deleteAccount", () => {
+    it("archives active accounts instead of removing their history", async () => {
+      prismaMock.account.findFirst.mockResolvedValue({
+        id: "account-1",
+        userId: "user-1",
+        name: "工资卡",
+        category: AccountCategory.DEBIT_CARD,
+        type: AccountType.ASSET,
+        currentAmount: 100000n,
+        includeInStats: true,
+        archived: false,
+        note: null,
+        createdAt: new Date("2026-07-01T00:00:00.000Z"),
+        updatedAt: new Date("2026-07-01T00:00:00.000Z"),
+      });
+
+      await deleteAccount(
+        "user-1",
+        formData({
+          accountId: "account-1",
+        }),
+      );
+
+      expect(prismaMock.account.findFirst).toHaveBeenCalledWith({
+        where: { id: "account-1", userId: "user-1", archived: false },
+      });
+      expect(prismaMock.account.update).toHaveBeenCalledWith({
+        where: { id: "account-1" },
+        data: { archived: true, includeInStats: false },
+      });
+    });
+  });
+
   describe("read services", () => {
     it("maps accounts for the account list with included accounts first", async () => {
       prismaMock.account.findMany.mockResolvedValue([
@@ -292,6 +444,7 @@ describe("asset services", () => {
           id: "change-1",
           accountId: "account-1",
           accountNameSnapshot: "工资卡",
+          categorySnapshot: AccountCategory.DEBIT_CARD,
           type: ChangeType.INCREASE,
           beforeAmount: 100000n,
           changeAmount: 5000n,
@@ -306,6 +459,7 @@ describe("asset services", () => {
           id: "change-1",
           accountId: "account-1",
           accountName: "工资卡",
+          category: "debit_card",
           type: "increase",
           beforeAmount: 100000n,
           changeAmount: 5000n,
@@ -359,6 +513,7 @@ describe("asset services", () => {
           {
             id: "change-1",
             accountNameSnapshot: "工资卡",
+            categorySnapshot: AccountCategory.DEBIT_CARD,
             type: ChangeType.INCREASE,
             changeAmount: 10000n,
             afterAmount: 510000n,
@@ -401,6 +556,7 @@ describe("asset services", () => {
           {
             id: "change-1",
             accountName: "工资卡",
+            category: "debit_card",
             type: "increase",
             changeAmount: 10000n,
             afterAmount: 510000n,

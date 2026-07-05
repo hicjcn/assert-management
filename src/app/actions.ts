@@ -6,6 +6,8 @@ import { redirect } from "next/navigation";
 import {
   createAccount,
   createAccountChange,
+  deleteAccount,
+  updateAccount,
 } from "@/server/assets";
 import { login, logout, requireSession } from "@/server/auth";
 
@@ -23,6 +25,26 @@ export async function createAccountAction(formData: FormData) {
   const session = await requireSession();
 
   await createAccount(session.userId, formData);
+  revalidatePath("/");
+  revalidatePath("/accounts");
+  revalidatePath("/records");
+  redirect("/accounts");
+}
+
+export async function updateAccountAction(formData: FormData) {
+  const session = await requireSession();
+
+  await updateAccount(session.userId, formData);
+  revalidatePath("/");
+  revalidatePath("/accounts");
+  revalidatePath("/records");
+  redirect("/accounts");
+}
+
+export async function deleteAccountAction(formData: FormData) {
+  const session = await requireSession();
+
+  await deleteAccount(session.userId, formData);
   revalidatePath("/");
   revalidatePath("/accounts");
   revalidatePath("/records");
