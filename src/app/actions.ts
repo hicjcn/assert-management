@@ -1,0 +1,40 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
+import {
+  createAccount,
+  createAccountChange,
+} from "@/server/assets";
+import { login, logout, requireSession } from "@/server/auth";
+
+export async function loginAction(formData: FormData) {
+  await login(String(formData.get("username") ?? ""), String(formData.get("password") ?? ""));
+  redirect("/");
+}
+
+export async function logoutAction() {
+  await logout();
+  redirect("/login");
+}
+
+export async function createAccountAction(formData: FormData) {
+  const session = await requireSession();
+
+  await createAccount(session.userId, formData);
+  revalidatePath("/");
+  revalidatePath("/accounts");
+  revalidatePath("/records");
+  redirect("/accounts");
+}
+
+export async function createAccountChangeAction(formData: FormData) {
+  const session = await requireSession();
+
+  await createAccountChange(session.userId, formData);
+  revalidatePath("/");
+  revalidatePath("/accounts");
+  revalidatePath("/records");
+  redirect("/records");
+}
