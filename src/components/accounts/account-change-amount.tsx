@@ -35,8 +35,8 @@ export function AccountChangeAmount({
     <span
       className={cn(
         "inline-flex shrink-0 items-center justify-end gap-1 font-semibold",
-        isIncrease && "text-emerald-600",
-        isDecrease && "text-rose-600",
+        isIncrease && "text-rose-600",
+        isDecrease && "text-emerald-600",
         !isIncrease && !isDecrease && "text-slate-900",
         className,
       )}
