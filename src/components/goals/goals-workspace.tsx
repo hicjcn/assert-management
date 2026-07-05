@@ -130,9 +130,9 @@ function GoalForm({
   goal?: GoalView;
 }) {
   return (
-    <form action={action} className="space-y-3">
+    <form action={action} className="space-y-4">
       {goal ? <input name="goalId" type="hidden" value={goal.id} /> : null}
-      <label className="space-y-1.5 text-xs font-medium text-[#6e6e73]">
+      <label className="space-y-2 text-xs font-medium text-[#6e6e73]">
         <span>目标名称</span>
         <Input
           defaultValue={goal?.name}
@@ -141,7 +141,7 @@ function GoalForm({
           required
         />
       </label>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="mt-5 grid grid-cols-2 gap-3">
         <MoneyInput
           defaultValue={goal ? centsToInput(goal.targetAmount) : "0"}
           label="目标金额"
@@ -204,6 +204,9 @@ function BottomActionButton({
 export function GoalsWorkspace({ budget, goals }: GoalsWorkspaceProps) {
   const [openPanel, setOpenPanel] = useState<"budget" | "create" | null>(null);
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
+  const [confirmingDeleteId, setConfirmingDeleteId] = useState<string | null>(
+    null,
+  );
 
   return (
     <section className="space-y-4">
@@ -384,24 +387,39 @@ export function GoalsWorkspace({ budget, goals }: GoalsWorkspaceProps) {
                     <div className="grid grid-cols-2 gap-3">
                       <Button
                         className="w-full"
-                        onClick={() => setEditingGoalId(null)}
+                        onClick={() => {
+                          setEditingGoalId(null);
+                          setConfirmingDeleteId(null);
+                        }}
                         type="button"
                         variant="ghost"
                       >
                         <X className="h-4 w-4" />
                         收起
                       </Button>
-                      <form action={deleteGoalAction}>
-                        <input name="goalId" type="hidden" value={goal.id} />
+                      {confirmingDeleteId === goal.id ? (
+                        <form action={deleteGoalAction}>
+                          <input name="goalId" type="hidden" value={goal.id} />
+                          <Button
+                            className="w-full bg-rose-500 text-white hover:bg-rose-600"
+                            type="submit"
+                            variant="ghost"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            确认删除
+                          </Button>
+                        </form>
+                      ) : (
                         <Button
                           className="w-full text-rose-600 hover:bg-rose-50"
-                          type="submit"
+                          onClick={() => setConfirmingDeleteId(goal.id)}
+                          type="button"
                           variant="ghost"
                         >
                           <Trash2 className="h-4 w-4" />
                           删除
                         </Button>
-                      </form>
+                      )}
                     </div>
                   </div>
                 ) : null}
