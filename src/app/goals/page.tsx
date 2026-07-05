@@ -1,7 +1,10 @@
 import { MobileShell } from "@/components/layout/mobile-shell";
 import { Card, CardContent } from "@/components/ui/card";
+import { requireSession } from "@/server/auth";
 
-export default function GoalsPage() {
+export default async function GoalsPage() {
+  await requireSession();
+
   return (
     <MobileShell title="目标">
       <Card>

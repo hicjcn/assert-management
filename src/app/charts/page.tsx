@@ -1,7 +1,10 @@
 import { MobileShell } from "@/components/layout/mobile-shell";
 import { Card, CardContent } from "@/components/ui/card";
+import { requireSession } from "@/server/auth";
 
-export default function ChartsPage() {
+export default async function ChartsPage() {
+  await requireSession();
+
   return (
     <MobileShell title="图表">
       <Card>

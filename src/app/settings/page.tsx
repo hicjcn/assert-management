@@ -1,7 +1,10 @@
 import { MobileShell } from "@/components/layout/mobile-shell";
 import { Card, CardContent } from "@/components/ui/card";
+import { requireSession } from "@/server/auth";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  await requireSession();
+
   return (
     <MobileShell title="设置">
       <Card>

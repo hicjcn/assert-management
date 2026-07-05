@@ -17,12 +17,15 @@ type SessionPayload = {
 };
 
 function getSessionSecret() {
-  const secret =
-    process.env.SESSION_SECRET ??
-    process.env.AUTH_SECRET ??
-    "asset-management-local-development-secret";
+  const secret = process.env.SESSION_SECRET ?? process.env.AUTH_SECRET;
 
-  return new TextEncoder().encode(secret);
+  if (!secret && process.env.NODE_ENV === "production") {
+    throw new Error("AUTH_SECRET or SESSION_SECRET is required in production.");
+  }
+
+  return new TextEncoder().encode(
+    secret ?? "asset-management-local-development-secret",
+  );
 }
 
 async function signSession(payload: SessionPayload) {
