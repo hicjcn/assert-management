@@ -547,7 +547,7 @@ export function ChartsDashboard({ data }: ChartsDashboardProps) {
   return (
     <div className="space-y-4">
       <Card className="border-[#dce7f1] bg-[#fbfdff]/95 shadow-[0_14px_32px_rgba(84,181,255,0.12)]">
-        <CardContent className="space-y-3 pt-4">
+        <CardContent className="space-y-3 pt-4 pb-0">
           <div className="grid grid-cols-3 gap-2">
             {chartModeValues.map((value) => (
               <button
@@ -577,22 +577,6 @@ export function ChartsDashboard({ data }: ChartsDashboardProps) {
               </button>
             ))}
           </div>
-
-          <button
-            aria-expanded={filtersExpanded}
-            className="mx-auto flex h-5 items-center justify-center gap-0.5 text-[#8a96a3] transition hover:text-[#3f8fc4]"
-            onClick={() => setFiltersExpanded((expanded) => !expanded)}
-            type="button"
-          >
-            <span className="text-[10px] font-medium leading-none">
-              {filtersExpanded ? "收起筛选" : "展开筛选"}
-            </span>
-            {filtersExpanded ? (
-              <ChevronUp aria-hidden="true" className="h-3 w-3" />
-            ) : (
-              <ChevronDown aria-hidden="true" className="h-3 w-3" />
-            )}
-          </button>
 
           {filtersExpanded ? (
             <>
@@ -645,6 +629,22 @@ export function ChartsDashboard({ data }: ChartsDashboardProps) {
               </div>
             </>
           ) : null}
+
+          <button
+            aria-expanded={filtersExpanded}
+            className="-mx-4 flex h-8 w-[calc(100%+2rem)] items-center justify-center gap-0.5 rounded-b-lg bg-white/35 text-[#8a96a3] transition hover:text-[#3f8fc4]"
+            onClick={() => setFiltersExpanded((expanded) => !expanded)}
+            type="button"
+          >
+            <span className="text-[10px] font-medium leading-none">
+              {filtersExpanded ? "收起筛选" : "展开筛选"}
+            </span>
+            {filtersExpanded ? (
+              <ChevronUp aria-hidden="true" className="h-3 w-3" />
+            ) : (
+              <ChevronDown aria-hidden="true" className="h-3 w-3" />
+            )}
+          </button>
         </CardContent>
       </Card>
 
