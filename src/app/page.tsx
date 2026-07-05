@@ -1,4 +1,12 @@
-import { ArrowDownRight, ArrowUpRight, Landmark, Plus } from "lucide-react";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  CreditCard,
+  Landmark,
+  Plus,
+  TrendingUp,
+  WalletCards,
+} from "lucide-react";
 import Link from "next/link";
 
 import { logoutAction } from "@/app/actions";
@@ -19,9 +27,15 @@ export default async function Home() {
   return (
     <MobileShell title="资产管家">
       <section className="space-y-4">
-        <Card className="border-emerald-100 bg-emerald-50">
-          <CardHeader>
-            <CardTitle>净资产</CardTitle>
+        <Card className="overflow-hidden border-emerald-100 bg-emerald-50">
+          <CardHeader className="flex flex-row items-start justify-between gap-4">
+            <div>
+              <CardTitle>净资产</CardTitle>
+              <p className="mt-1 text-xs text-emerald-700">资产实力概览</p>
+            </div>
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white shadow-sm shadow-emerald-200">
+              <TrendingUp className="h-5 w-5" />
+            </span>
           </CardHeader>
           <CardContent>
             <p className="text-4xl font-semibold tracking-normal">
@@ -35,18 +49,28 @@ export default async function Home() {
         </Card>
 
         <div className="grid grid-cols-2 gap-3">
-          <Card>
-            <CardContent className="space-y-2 pt-4">
-              <ArrowUpRight className="h-5 w-5 text-teal-600" />
+          <Card className="border-teal-100 bg-white">
+            <CardContent className="space-y-3 pt-4">
+              <div className="flex items-start justify-between gap-2">
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-50 text-teal-600">
+                  <WalletCards className="h-5 w-5" />
+                </span>
+                <ArrowUpRight className="h-4 w-4 text-teal-500" />
+              </div>
               <p className="text-sm text-slate-500">总资产</p>
               <p className="text-lg font-semibold">
                 {formatCents(summary.assets)}
               </p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="space-y-2 pt-4">
-              <ArrowDownRight className="h-5 w-5 text-rose-500" />
+          <Card className="border-rose-100 bg-white">
+            <CardContent className="space-y-3 pt-4">
+              <div className="flex items-start justify-between gap-2">
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-50 text-rose-500">
+                  <CreditCard className="h-5 w-5" />
+                </span>
+                <ArrowDownRight className="h-4 w-4 text-rose-500" />
+              </div>
               <p className="text-sm text-slate-500">总负债</p>
               <p className="text-lg font-semibold">
                 {formatCents(summary.liabilities)}
