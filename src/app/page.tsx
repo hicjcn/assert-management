@@ -1,12 +1,8 @@
 import {
-  ArrowDownRight,
   ArrowUpRight,
-  CreditCard,
   Landmark,
   Plus,
   Target,
-  TrendingUp,
-  WalletCards,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -14,21 +10,52 @@ import { logoutAction } from "@/app/actions";
 import { AccountChangeAmount } from "@/components/accounts/account-change-amount";
 import { AccountMark } from "@/components/accounts/account-visual";
 import { MobileShell } from "@/components/layout/mobile-shell";
+import { Sparkline } from "@/components/charts/sparkline";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCents } from "@/lib/money";
 import { accountCategoryLabels, changeTypeLabels } from "@/types/domain";
-import { getDashboard } from "@/server/assets";
+import type { ChartsData } from "@/types/charts";
+import { getCharts, getDashboard } from "@/server/assets";
 import { requireSession } from "@/server/auth";
 import { listGoals } from "@/server/goals";
 
+function buildTrendSeries(data: ChartsData, rangeMonths = 6) {
+  const months = data.months.slice(-rangeMonths);
+  const assetAccounts = data.accounts.filter((account) => account.type === "asset");
+  const liabilityAccounts = data.accounts.filter(
+    (account) => account.type === "liability",
+  );
+
+  return months.map((month) => {
+    let assets = 0;
+    let liabilities = 0;
+
+    for (const account of assetAccounts) {
+      assets += month.accountAmounts[account.id] ?? 0;
+    }
+    for (const account of liabilityAccounts) {
+      liabilities += month.accountAmounts[account.id] ?? 0;
+    }
+
+    return {
+      assets,
+      liabilities,
+      netWorth: assets - liabilities,
+    };
+  });
+}
+
 export default async function Home() {
   const session = await requireSession();
-  const [summary, goals] = await Promise.all([
+  const [summary, goals, charts] = await Promise.all([
     getDashboard(session.userId),
     listGoals(session.userId),
+    getCharts(session.userId),
   ]);
   const primaryGoal = goals[0];
+  const trendSeries = buildTrendSeries(charts);
+  const hasTrend = trendSeries.length > 0;
 
   return (
     <MobileShell title="资产管家">
@@ -39,9 +66,16 @@ export default async function Home() {
               <CardTitle>净资产</CardTitle>
               <p className="mt-1 text-xs text-[#6e6e73]">资产实力概览</p>
             </div>
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#007aff] text-white shadow-sm shadow-[#007aff]/30">
-              <TrendingUp className="h-5 w-5" />
-            </span>
+            {hasTrend ? (
+              <Sparkline
+                ariaLabel="净资产趋势"
+                className="shrink-0"
+                color="#21a856"
+                height={48}
+                values={trendSeries.map((item) => item.netWorth)}
+                width={120}
+              />
+            ) : null}
           </CardHeader>
           <CardContent>
             <p className="text-4xl font-semibold tracking-normal text-[#1d1d1f]">
@@ -57,13 +91,19 @@ export default async function Home() {
         <div className="grid grid-cols-2 gap-3">
           <Card>
             <CardContent className="space-y-3 pt-4">
-              <div className="flex items-start justify-between gap-2">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#007aff]/10 text-[#007aff]">
-                  <WalletCards className="h-5 w-5" />
-                </span>
-                <ArrowUpRight className="h-4 w-4 text-[#007aff]" />
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm text-[#6e6e73]">总资产</p>
+                {hasTrend ? (
+                  <Sparkline
+                    ariaLabel="总资产趋势"
+                    className="shrink-0"
+                    color="#168be2"
+                    height={36}
+                    values={trendSeries.map((item) => item.assets)}
+                    width={84}
+                  />
+                ) : null}
               </div>
-              <p className="text-sm text-[#6e6e73]">总资产</p>
               <p className="text-lg font-semibold text-[#1d1d1f]">
                 {formatCents(summary.assets)}
               </p>
@@ -71,13 +111,19 @@ export default async function Home() {
           </Card>
           <Card>
             <CardContent className="space-y-3 pt-4">
-              <div className="flex items-start justify-between gap-2">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-50 text-rose-500">
-                  <CreditCard className="h-5 w-5" />
-                </span>
-                <ArrowDownRight className="h-4 w-4 text-rose-500" />
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm text-[#6e6e73]">总负债</p>
+                {hasTrend ? (
+                  <Sparkline
+                    ariaLabel="总负债趋势"
+                    className="shrink-0"
+                    color="#e64f7d"
+                    height={36}
+                    values={trendSeries.map((item) => item.liabilities)}
+                    width={84}
+                  />
+                ) : null}
               </div>
-              <p className="text-sm text-[#6e6e73]">总负债</p>
               <p className="text-lg font-semibold text-[#1d1d1f]">
                 {formatCents(summary.liabilities)}
               </p>
