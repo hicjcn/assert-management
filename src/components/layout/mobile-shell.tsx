@@ -17,7 +17,7 @@ export function MobileShell({ title, header, children }: MobileShellProps) {
         aria-hidden="true"
         className="fixed left-1/2 top-0 -z-10 h-screen w-full max-w-md -translate-x-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.54)_0%,rgba(245,245,247,0.70)_42%,rgba(245,245,247,0.86)_100%)]"
       />
-      <main className="flex-1 space-y-5 px-5 py-6 pb-24">
+      <main className="flex-1 space-y-5 px-5 py-6 pb-32">
         {header ?? (
           <div className="pt-2">
             <h1 className="text-3xl font-semibold tracking-normal text-[#1d1d1f] drop-shadow-[0_1px_0_rgba(255,255,255,0.72)]">
