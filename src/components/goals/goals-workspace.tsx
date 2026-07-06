@@ -18,6 +18,7 @@ import {
   updateGoalAction,
   updateGoalBudgetAction,
 } from "@/app/actions";
+import { MobileShell } from "@/components/layout/mobile-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -173,24 +174,26 @@ function GoalForm({
   );
 }
 
-function BottomActionButton({
+function HeaderActionButton({
   active,
   children,
+  label,
   onClick,
 }: {
   active: boolean;
   children: React.ReactNode;
+  label: string;
   onClick: () => void;
 }) {
   return (
     <button
       className={cn(
-        "inline-flex h-11 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition",
+        "inline-flex h-10 w-10 items-center justify-center rounded-full text-[#007aff] transition hover:bg-white/55",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007aff]",
-        active
-          ? "bg-[#007aff] text-white shadow-sm shadow-[#007aff]/25"
-          : "border border-white/70 bg-white/90 text-[#1d1d1f] shadow-sm shadow-black/[0.05]",
+        active && "bg-white/70 shadow-sm shadow-black/[0.05]",
       )}
+      aria-label={label}
+      aria-pressed={active}
       onClick={onClick}
       type="button"
     >
@@ -206,25 +209,36 @@ export function GoalsWorkspace({ budget, goals }: GoalsWorkspaceProps) {
     null,
   );
 
-  return (
-    <section className="space-y-4">
-      <div className="grid grid-cols-2 gap-3">
-        <BottomActionButton
+  const header = (
+    <div className="flex items-start justify-between gap-4 pt-2">
+      <div className="min-w-0">
+        <h1 className="text-3xl font-semibold tracking-normal text-[#1d1d1f] drop-shadow-[0_1px_0_rgba(255,255,255,0.72)]">
+          目标
+        </h1>
+        <div className="mt-3 h-1 w-12 rounded-full bg-[#007aff]" />
+      </div>
+      <div className="-mr-1 mt-1 flex shrink-0 items-center gap-1">
+        <HeaderActionButton
           active={openPanel === "budget"}
+          label="月度收支"
           onClick={() => setOpenPanel(openPanel === "budget" ? null : "budget")}
         >
-          <SlidersHorizontal className="h-4 w-4" />
-          月度收支
-        </BottomActionButton>
-        <BottomActionButton
+          <SlidersHorizontal className="h-5 w-5" />
+        </HeaderActionButton>
+        <HeaderActionButton
           active={openPanel === "create"}
+          label="新增目标"
           onClick={() => setOpenPanel(openPanel === "create" ? null : "create")}
         >
-          <Plus className="h-4 w-4" />
-          新增目标
-        </BottomActionButton>
+          <Plus className="h-5 w-5" />
+        </HeaderActionButton>
       </div>
+    </div>
+  );
 
+  return (
+    <MobileShell header={header} title="目标">
+      <section className="space-y-4">
       {openPanel === "budget" ? (
         <Card>
           <CardHeader className="flex flex-row items-start justify-between gap-4">
@@ -311,7 +325,7 @@ export function GoalsWorkspace({ budget, goals }: GoalsWorkspaceProps) {
       {goals.length === 0 ? (
         <Card>
           <CardContent className="pt-5 text-sm text-[#3a3a3c]">
-            还没有目标。点击底部按钮保存第一个目标后，这里会显示进度和预计达成时间。
+            还没有目标。点击右上角加号保存第一个目标后，这里会显示进度和预计达成时间。
           </CardContent>
         </Card>
       ) : (
@@ -427,6 +441,7 @@ export function GoalsWorkspace({ budget, goals }: GoalsWorkspaceProps) {
         })
       )}
 
-    </section>
+      </section>
+    </MobileShell>
   );
 }
