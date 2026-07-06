@@ -11,6 +11,7 @@ import {
 } from "@/components/accounts/account-visual";
 import { MobileShell } from "@/components/layout/mobile-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatShortDateTime } from "@/lib/date";
 import { formatAccountCents } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import { getAccount, listAccountChanges } from "@/server/assets";
@@ -158,12 +159,7 @@ export default async function AccountDetailPage({
                           </span>
                         </div>
                         <p className="mt-1 text-xs text-[#86868b]">
-                          {change.changedAt.toLocaleString("zh-CN", {
-                            month: "2-digit",
-                            day: "2-digit",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+                          {formatShortDateTime(change.changedAt)}
                         </p>
                       </div>
                     </div>

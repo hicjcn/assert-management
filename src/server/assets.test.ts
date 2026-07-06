@@ -726,7 +726,7 @@ describe("asset services", () => {
       expect(prismaMock.accountChange.findMany).toHaveBeenNthCalledWith(1, {
         where: {
           userId: "user-1",
-          changedAt: { gte: new Date(2026, 6, 1) },
+          changedAt: { gte: new Date("2026-06-30T16:00:00.000Z") },
           account: { includeInStats: true, archived: false },
         },
         select: { changeAmount: true },

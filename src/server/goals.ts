@@ -1,5 +1,6 @@
 import "server-only";
 
+import { addChinaMonths } from "@/lib/date";
 import { yuanToCents } from "@/lib/money";
 import {
   goalBudgetSchema,
@@ -118,9 +119,7 @@ function pickBudgetAmountStrings(values: Record<string, string>) {
 }
 
 function addMonths(date: Date, months: number) {
-  const result = new Date(date);
-  result.setMonth(result.getMonth() + months);
-  return result;
+  return addChinaMonths(date, months);
 }
 
 function ceilDivide(value: bigint, divisor: bigint) {

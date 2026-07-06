@@ -1,7 +1,5 @@
 import {
   ArrowUpRight,
-  Landmark,
-  Plus,
   Target,
 } from "lucide-react";
 import Link from "next/link";
@@ -13,6 +11,7 @@ import { MobileShell } from "@/components/layout/mobile-shell";
 import { Sparkline } from "@/components/charts/sparkline";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatShortDateTime } from "@/lib/date";
 import { formatCents } from "@/lib/money";
 import { accountCategoryLabels, changeTypeLabels } from "@/types/domain";
 import type { ChartsData } from "@/types/charts";
@@ -167,23 +166,6 @@ export default async function Home() {
           </Link>
         ) : null}
 
-        <div className="grid grid-cols-2 gap-3">
-          <Link
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#007aff] px-4 text-sm font-semibold text-white shadow-sm shadow-[#007aff]/25 transition hover:bg-[#006ee6] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007aff]"
-            href="/accounts"
-          >
-            <Plus className="h-4 w-4" />
-            新增账户
-          </Link>
-          <Link
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-white/70 bg-white/85 px-4 text-sm font-semibold text-[#1d1d1f] shadow-sm shadow-black/[0.04] transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007aff]"
-            href="/records"
-          >
-            <Landmark className="h-4 w-4" />
-            记录变更
-          </Link>
-        </div>
-
         <Card>
           <CardHeader className="pb-3">
             <CardTitle>最近变更</CardTitle>
@@ -216,12 +198,7 @@ export default async function Home() {
                       </div>
                       <p className="text-xs text-[#86868b]">
                         {changeTypeLabels[change.type]} ·{" "}
-                        {change.changedAt.toLocaleString("zh-CN", {
-                          month: "2-digit",
-                          day: "2-digit",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {formatShortDateTime(change.changedAt)}
                       </p>
                     </div>
                   </div>

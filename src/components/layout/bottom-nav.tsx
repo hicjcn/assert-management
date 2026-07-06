@@ -16,10 +16,24 @@ const items = [
 
 export function BottomNav() {
   const pathname = usePathname();
+  const activeIndex = Math.max(
+    items.findIndex((item) =>
+      item.href === "/" ? pathname === "/" : pathname.startsWith(item.href),
+    ),
+    0,
+  );
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-md border-t border-white/70 bg-white/80 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 shadow-[0_-12px_28px_rgba(0,0,0,0.06)] backdrop-blur-xl">
-      <div className="grid grid-cols-5 gap-1">
+    <nav
+      aria-label="主要导航"
+      className="fixed inset-x-5 bottom-[max(env(safe-area-inset-bottom),0.85rem)] z-30 mx-auto max-w-[25rem] rounded-[1.7rem] border border-white/30 bg-white/12 px-2.5 py-2 shadow-[0_18px_48px_rgba(29,29,31,0.10),inset_0_1px_0_rgba(255,255,255,0.42)] backdrop-blur-2xl supports-[backdrop-filter]:bg-white/10"
+    >
+      <div className="relative grid grid-cols-5 gap-1 overflow-hidden rounded-[1.25rem]">
+        <span
+          aria-hidden="true"
+          className="absolute inset-y-0 left-0 w-1/5 rounded-[1.05rem] bg-white/26 shadow-[0_8px_22px_rgba(0,122,255,0.08)] ring-1 ring-white/28 transition-transform duration-300 ease-out motion-reduce:transition-none"
+          style={{ transform: `translateX(${activeIndex * 100}%)` }}
+        />
         {items.map((item) => {
           const active =
             item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
@@ -27,14 +41,20 @@ export function BottomNav() {
 
           return (
             <Link
+              aria-current={active ? "page" : undefined}
               className={cn(
-                "flex h-12 flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-[#86868b] transition",
-                active && "bg-[#007aff]/10 text-[#007aff]",
+                "relative z-10 flex h-12 flex-col items-center justify-center gap-1 rounded-[1.05rem] text-xs font-medium text-[#6e6e73] transition duration-200 hover:text-[#007aff] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007aff]",
+                active && "text-[#007aff]",
               )}
               href={item.href}
               key={item.href}
             >
-              <Icon className="h-4 w-4" />
+              <Icon
+                className={cn(
+                  "h-4 w-4 transition-transform duration-200 motion-reduce:transition-none",
+                  active && "-translate-y-0.5",
+                )}
+              />
               <span>{item.label}</span>
             </Link>
           );
