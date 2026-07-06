@@ -48,66 +48,76 @@ export default async function AccountsPage() {
       } => group.items.length > 0,
     );
 
-  return (
-    <MobileShell title="账户">
-      <div className="space-y-4">
-        <details className="rounded-lg border border-white/70 bg-white/80 shadow-[0_10px_30px_rgba(0,0,0,0.06)] backdrop-blur-xl [&>summary::-webkit-details-marker]:hidden">
-          <summary className="flex h-12 cursor-pointer items-center justify-between px-4 text-sm font-semibold text-[#1d1d1f]">
-            <span>新增账户</span>
-            <Plus className="h-4 w-4 text-[#007aff]" />
-          </summary>
-          <div className="border-t border-black/[0.06] px-4 pb-4 pt-3">
-            <form action={createAccountAction} className="space-y-3">
-              <Input name="name" placeholder="账户名称" required />
-              <select
-                className="h-11 w-full rounded-lg border border-white/70 bg-white/85 px-3 text-base text-[#1d1d1f] shadow-sm shadow-black/[0.03] outline-none transition focus:border-[#007aff] focus:ring-2 focus:ring-[#007aff]/15"
-                name="category"
-                required
-              >
-                {accountCategoryValues.map((category) => (
-                  <option key={category} value={category}>
-                    {accountCategoryLabels[category]}
-                    {accountCategoryDescriptions[category]
-                      ? `（${accountCategoryDescriptions[category]}）`
-                      : ""}
-                  </option>
-                ))}
-              </select>
-              <select
-                className="h-11 w-full rounded-lg border border-white/70 bg-white/85 px-3 text-base text-[#1d1d1f] shadow-sm shadow-black/[0.03] outline-none transition focus:border-[#007aff] focus:ring-2 focus:ring-[#007aff]/15"
-                name="iconKey"
-              >
-                <option value="">自动匹配图标</option>
-                {accountIconValues.map((iconKey) => (
-                  <option key={iconKey} value={iconKey}>
-                    {accountIconLabels[iconKey]}
-                  </option>
-                ))}
-              </select>
-              <Input
-                inputMode="decimal"
-                name="currentAmount"
-                placeholder="当前余额，如 1200"
-                required
-              />
-              <Input name="note" placeholder="备注，可选" />
-              <label className="flex items-center gap-2 text-sm text-[#3a3a3c]">
-                <input
-                  className="h-4 w-4 rounded border-[#c7c7cc] text-[#007aff]"
-                  defaultChecked
-                  name="includeInStats"
-                  type="checkbox"
-                />
-                计入首页资产统计
-              </label>
-              <Button className="w-full" type="submit">
-                <Plus className="h-4 w-4" />
-                保存账户
-              </Button>
-            </form>
-          </div>
-        </details>
+  const addAccountHeader = (
+    <details className="pt-2 [&>summary::-webkit-details-marker]:hidden">
+      <summary className="flex cursor-pointer items-start justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-3xl font-semibold tracking-normal text-[#1d1d1f] drop-shadow-[0_1px_0_rgba(255,255,255,0.72)]">
+            账户
+          </h1>
+          <div className="mt-3 h-1 w-12 rounded-full bg-[#007aff]" />
+        </div>
+        <span className="-mr-1 mt-1 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#007aff] transition hover:bg-white/55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007aff]">
+          <Plus className="h-5 w-5" />
+          <span className="sr-only">新增账户</span>
+        </span>
+      </summary>
+      <div className="mt-4 rounded-lg border border-white/70 bg-white/80 px-4 pb-4 pt-3 shadow-[0_10px_30px_rgba(0,0,0,0.06)] backdrop-blur-xl">
+        <form action={createAccountAction} className="space-y-3">
+          <Input name="name" placeholder="账户名称" required />
+          <select
+            className="h-11 w-full rounded-lg border border-white/70 bg-white/85 px-3 text-base text-[#1d1d1f] shadow-sm shadow-black/[0.03] outline-none transition focus:border-[#007aff] focus:ring-2 focus:ring-[#007aff]/15"
+            name="category"
+            required
+          >
+            {accountCategoryValues.map((category) => (
+              <option key={category} value={category}>
+                {accountCategoryLabels[category]}
+                {accountCategoryDescriptions[category]
+                  ? `（${accountCategoryDescriptions[category]}）`
+                  : ""}
+              </option>
+            ))}
+          </select>
+          <select
+            className="h-11 w-full rounded-lg border border-white/70 bg-white/85 px-3 text-base text-[#1d1d1f] shadow-sm shadow-black/[0.03] outline-none transition focus:border-[#007aff] focus:ring-2 focus:ring-[#007aff]/15"
+            name="iconKey"
+          >
+            <option value="">自动匹配图标</option>
+            {accountIconValues.map((iconKey) => (
+              <option key={iconKey} value={iconKey}>
+                {accountIconLabels[iconKey]}
+              </option>
+            ))}
+          </select>
+          <Input
+            inputMode="decimal"
+            name="currentAmount"
+            placeholder="当前余额，如 1200"
+            required
+          />
+          <Input name="note" placeholder="备注，可选" />
+          <label className="flex items-center gap-2 text-sm text-[#3a3a3c]">
+            <input
+              className="h-4 w-4 rounded border-[#c7c7cc] text-[#007aff]"
+              defaultChecked
+              name="includeInStats"
+              type="checkbox"
+            />
+            计入首页资产统计
+          </label>
+          <Button className="w-full" type="submit">
+            <Plus className="h-4 w-4" />
+            保存账户
+          </Button>
+        </form>
+      </div>
+    </details>
+  );
 
+  return (
+    <MobileShell header={addAccountHeader} title="账户">
+      <div className="space-y-4">
         <div className="space-y-3">
           {accounts.length === 0 ? (
             <Card className="overflow-hidden border-dashed border-[#c7c7cc]">

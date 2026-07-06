@@ -2,10 +2,11 @@ import { BottomNav } from "@/components/layout/bottom-nav";
 
 type MobileShellProps = {
   title: string;
+  header?: React.ReactNode;
   children: React.ReactNode;
 };
 
-export function MobileShell({ title, children }: MobileShellProps) {
+export function MobileShell({ title, header, children }: MobileShellProps) {
   return (
     <div className="relative isolate mx-auto flex min-h-screen w-full max-w-md flex-col overflow-x-hidden bg-[#f5f5f7]">
       <div
@@ -17,12 +18,14 @@ export function MobileShell({ title, children }: MobileShellProps) {
         className="fixed left-1/2 top-0 -z-10 h-screen w-full max-w-md -translate-x-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.54)_0%,rgba(245,245,247,0.70)_42%,rgba(245,245,247,0.86)_100%)]"
       />
       <main className="flex-1 space-y-5 px-5 py-6 pb-24">
-        <div className="pt-2">
-          <h1 className="text-3xl font-semibold tracking-normal text-[#1d1d1f] drop-shadow-[0_1px_0_rgba(255,255,255,0.72)]">
-            {title}
-          </h1>
-          <div className="mt-3 h-1 w-12 rounded-full bg-[#007aff]" />
-        </div>
+        {header ?? (
+          <div className="pt-2">
+            <h1 className="text-3xl font-semibold tracking-normal text-[#1d1d1f] drop-shadow-[0_1px_0_rgba(255,255,255,0.72)]">
+              {title}
+            </h1>
+            <div className="mt-3 h-1 w-12 rounded-full bg-[#007aff]" />
+          </div>
+        )}
         {children}
       </main>
       <BottomNav />

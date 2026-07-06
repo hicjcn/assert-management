@@ -1,7 +1,5 @@
 import {
   ArrowUpRight,
-  Landmark,
-  Plus,
   Target,
 } from "lucide-react";
 import Link from "next/link";
@@ -167,23 +165,6 @@ export default async function Home() {
             </Card>
           </Link>
         ) : null}
-
-        <div className="grid grid-cols-2 gap-3">
-          <Link
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#007aff] px-4 text-sm font-semibold text-white shadow-sm shadow-[#007aff]/25 transition hover:bg-[#006ee6] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007aff]"
-            href="/accounts"
-          >
-            <Plus className="h-4 w-4" />
-            新增账户
-          </Link>
-          <Link
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-white/70 bg-white/85 px-4 text-sm font-semibold text-[#1d1d1f] shadow-sm shadow-black/[0.04] transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007aff]"
-            href="/records"
-          >
-            <Landmark className="h-4 w-4" />
-            记录变更
-          </Link>
-        </div>
 
         <Card>
           <CardHeader className="pb-3">
