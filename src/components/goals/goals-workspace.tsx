@@ -21,8 +21,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { formatMonthYear } from "@/lib/date";
 import { formatCents } from "@/lib/money";
+import { cn } from "@/lib/utils";
 
 type BudgetView = {
   monthlyIncome: string;
@@ -81,10 +82,7 @@ function formatReachDate(value: string | null) {
     return "暂不可达成";
   }
 
-  return new Date(value).toLocaleDateString("zh-CN", {
-    year: "numeric",
-    month: "long",
-  });
+  return formatMonthYear(value);
 }
 
 function MoneyInput({ label, name, defaultValue = "0" }: MoneyInputProps) {

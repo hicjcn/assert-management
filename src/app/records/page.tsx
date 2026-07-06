@@ -4,6 +4,7 @@ import { MobileShell } from "@/components/layout/mobile-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { formatShortDateTime, toDateTimeLocalValue } from "@/lib/date";
 import { formatAccountCents } from "@/lib/money";
 import {
   listAccountChanges,
@@ -16,11 +17,6 @@ import {
   changeTypeValues,
 } from "@/types/domain";
 import { createAccountChangeAction } from "@/app/actions";
-
-function toDateTimeLocalValue(date: Date) {
-  const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
-  return offsetDate.toISOString().slice(0, 16);
-}
 
 export default async function RecordsPage() {
   const session = await requireSession();
@@ -127,12 +123,7 @@ export default async function RecordsPage() {
                         </div>
                         <p className="mt-1 text-xs text-[#86868b]">
                           {changeTypeLabels[change.type]} ·{" "}
-                          {change.changedAt.toLocaleString("zh-CN", {
-                            month: "2-digit",
-                            day: "2-digit",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+                          {formatShortDateTime(change.changedAt)}
                         </p>
                       </div>
                     </div>

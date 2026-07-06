@@ -13,6 +13,7 @@ import { MobileShell } from "@/components/layout/mobile-shell";
 import { Sparkline } from "@/components/charts/sparkline";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatShortDateTime } from "@/lib/date";
 import { formatCents } from "@/lib/money";
 import { accountCategoryLabels, changeTypeLabels } from "@/types/domain";
 import type { ChartsData } from "@/types/charts";
@@ -216,12 +217,7 @@ export default async function Home() {
                       </div>
                       <p className="text-xs text-[#86868b]">
                         {changeTypeLabels[change.type]} ·{" "}
-                        {change.changedAt.toLocaleString("zh-CN", {
-                          month: "2-digit",
-                          day: "2-digit",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {formatShortDateTime(change.changedAt)}
                       </p>
                     </div>
                   </div>

@@ -1,6 +1,14 @@
 import "server-only";
 
 import { AccountType, ChangeType } from "@/generated/prisma/enums";
+import {
+  addChinaMonths,
+  chinaMonthEnd,
+  chinaMonthStart,
+  formatMonthYear,
+  monthKey,
+  parseChinaDateTimeLocal,
+} from "@/lib/date";
 import { yuanToCents } from "@/lib/money";
 import {
   accountChangeSchema,
@@ -31,31 +39,23 @@ function inferAccountType(category: AccountCategory) {
 }
 
 function toMonthKey(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+  return monthKey(date);
 }
 
 function toMonthLabel(date: Date) {
-  return `${date.getFullYear()}年${date.getMonth() + 1}月`;
+  return formatMonthYear(date);
 }
 
 function monthStart(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth(), 1);
+  return chinaMonthStart(date);
 }
 
 function monthEnd(date: Date) {
-  return new Date(
-    date.getFullYear(),
-    date.getMonth() + 1,
-    0,
-    23,
-    59,
-    59,
-    999,
-  );
+  return chinaMonthEnd(date);
 }
 
 function addMonths(date: Date, months: number) {
-  return new Date(date.getFullYear(), date.getMonth() + months, 1);
+  return addChinaMonths(monthStart(date), months);
 }
 
 function buildChartMonths(startAt: Date, endAt: Date) {
@@ -73,7 +73,7 @@ function buildChartMonths(startAt: Date, endAt: Date) {
 
 export async function getDashboard(userId: string) {
   const now = new Date();
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const currentMonthStart = chinaMonthStart(now);
   const [accounts, monthChanges, recentChanges] = await Promise.all([
     prisma.account.findMany({
       where: { userId, archived: false },
@@ -82,7 +82,7 @@ export async function getDashboard(userId: string) {
     prisma.accountChange.findMany({
       where: {
         userId,
-        changedAt: { gte: monthStart },
+        changedAt: { gte: currentMonthStart },
         account: { includeInStats: true, archived: false },
       },
       select: { changeAmount: true },
@@ -418,7 +418,7 @@ export async function createAccountChange(userId: string, formData: FormData) {
     note: formData.get("note") || undefined,
   });
   const amount = yuanToCents(parsed.amount);
-  const changedAt = new Date(parsed.changedAt);
+  const changedAt = parseChinaDateTimeLocal(parsed.changedAt);
 
   if (Number.isNaN(changedAt.getTime())) {
     throw new Error("请选择有效的变更时间");
