@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BarChart3, Flag, Home, ListOrdered, WalletCards } from "lucide-react";
+import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -16,9 +17,18 @@ const items = [
 
 export function BottomNav() {
   const pathname = usePathname();
+  const [pendingNavigation, setPendingNavigation] = useState<{
+    from: string;
+    to: string;
+  } | null>(null);
+  const pendingPath =
+    pendingNavigation?.from === pathname ? pendingNavigation.to : null;
+  const displayedPath = pendingPath ?? pathname;
   const activeIndex = Math.max(
     items.findIndex((item) =>
-      item.href === "/" ? pathname === "/" : pathname.startsWith(item.href),
+      item.href === "/"
+        ? displayedPath === "/"
+        : displayedPath.startsWith(item.href),
     ),
     0,
   );
@@ -36,7 +46,9 @@ export function BottomNav() {
         />
         {items.map((item) => {
           const active =
-            item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+            item.href === "/"
+              ? displayedPath === "/"
+              : displayedPath.startsWith(item.href);
           const Icon = item.icon;
 
           return (
@@ -48,6 +60,12 @@ export function BottomNav() {
               )}
               href={item.href}
               key={item.href}
+              onClick={() =>
+                setPendingNavigation({ from: pathname, to: item.href })
+              }
+              onPointerDown={() =>
+                setPendingNavigation({ from: pathname, to: item.href })
+              }
             >
               <Icon
                 className={cn(

@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+
+import { AppChrome } from "@/components/layout/app-chrome";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" className="h-full">
       <body className="min-h-full bg-[#f5f5f7] text-[#1d1d1f] antialiased">
-        {children}
+        <AppChrome>{children}</AppChrome>
       </body>
     </html>
   );
