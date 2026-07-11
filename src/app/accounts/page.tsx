@@ -1,5 +1,4 @@
 import { ChevronRight, Plus } from "lucide-react";
-import Link from "next/link";
 
 import { createAccountAction } from "@/app/actions";
 import {
@@ -7,6 +6,7 @@ import {
   AccountTypeBadge,
   getAccountVisual,
 } from "@/components/accounts/account-visual";
+import { AccountDetailLink } from "@/components/accounts/account-detail-link";
 import { MobileShell } from "@/components/layout/mobile-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -167,7 +167,7 @@ export default async function AccountsPage() {
                   <CardContent className="pt-3">
                     <div className="space-y-2">
                       {group.items.map((account) => (
-                        <Link
+                        <AccountDetailLink
                           className="flex min-h-20 items-center justify-between gap-3 rounded-lg border border-white/70 bg-white/70 p-3 shadow-sm shadow-black/[0.03] transition hover:bg-white"
                           href={`/accounts/${account.id}`}
                           key={account.id}
@@ -213,7 +213,7 @@ export default async function AccountsPage() {
                             </p>
                             <ChevronRight className="h-4 w-4 text-[#c7c7cc]" />
                           </div>
-                        </Link>
+                        </AccountDetailLink>
                       ))}
                     </div>
                   </CardContent>

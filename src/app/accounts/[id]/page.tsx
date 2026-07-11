@@ -1,8 +1,7 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AccountActionPanel } from "@/components/accounts/account-action-panel";
+import { BackToAccountsButton } from "@/components/accounts/back-to-accounts-button";
 import { AccountChangeAmount } from "@/components/accounts/account-change-amount";
 import {
   AccountMark,
@@ -56,13 +55,7 @@ export default async function AccountDetailPage({
   return (
     <MobileShell title="账户详情">
       <div className="space-y-4">
-        <Link
-          className="inline-flex h-9 items-center gap-2 text-sm font-semibold text-[#3a3a3c]"
-          href="/accounts"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          返回账户
-        </Link>
+        <BackToAccountsButton />
 
         <Card className={cn("overflow-hidden", visual.border)}>
           <div className={cn("relative px-4 pb-5 pt-4", visual.softSurface)}>
