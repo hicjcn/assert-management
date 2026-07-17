@@ -17,6 +17,7 @@ import {
   accountUpdateSchema,
 } from "@/lib/validators";
 import { prisma } from "@/server/db/prisma";
+import { cacheAssetData } from "@/server/cache";
 import {
   accountCategoryFromPrisma,
   accountCategoryToPrisma,
@@ -72,6 +73,9 @@ function buildChartMonths(startAt: Date, endAt: Date) {
 }
 
 export async function getDashboard(userId: string) {
+  "use cache";
+  cacheAssetData(userId);
+
   const now = new Date();
   const currentMonthStart = chinaMonthStart(now);
   const [accounts, monthChanges, recentChanges] = await Promise.all([
@@ -135,6 +139,9 @@ export async function getDashboard(userId: string) {
 }
 
 export async function getCharts(userId: string): Promise<ChartsData> {
+  "use cache";
+  cacheAssetData(userId);
+
   const accounts = await prisma.account.findMany({
     where: { userId, archived: false, includeInStats: true },
     orderBy: [{ type: "asc" }, { currentAmount: "desc" }],
@@ -227,6 +234,9 @@ export async function getCharts(userId: string): Promise<ChartsData> {
 }
 
 export async function listAccounts(userId: string) {
+  "use cache";
+  cacheAssetData(userId);
+
   const accounts = await prisma.account.findMany({
     where: { userId, archived: false },
     orderBy: [{ includeInStats: "desc" }, { createdAt: "desc" }],
@@ -245,6 +255,9 @@ export async function listAccounts(userId: string) {
 }
 
 export async function getAccount(userId: string, accountId: string) {
+  "use cache";
+  cacheAssetData(userId);
+
   const account = await prisma.account.findFirst({
     where: { id: accountId, userId, archived: false },
   });
@@ -266,6 +279,9 @@ export async function getAccount(userId: string, accountId: string) {
 }
 
 export async function listAccountChanges(userId: string, accountId?: string) {
+  "use cache";
+  cacheAssetData(userId);
+
   const changes = await prisma.accountChange.findMany({
     where: { userId, ...(accountId ? { accountId } : {}) },
     include: { account: true },

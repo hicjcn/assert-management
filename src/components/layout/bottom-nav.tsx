@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BarChart3, Flag, Home, ListOrdered, WalletCards } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -15,8 +15,33 @@ const items = [
   { href: "/records", label: "记录", icon: ListOrdered },
 ];
 
+const prefetchOrder = ["/", "/accounts", "/records", "/goals", "/charts"];
+
+function scheduleWhenIdle(callback: () => void, delay: number) {
+  let idleId: number | null = null;
+  const timerId = window.setTimeout(() => {
+    if ("requestIdleCallback" in window) {
+      idleId = window.requestIdleCallback(callback, { timeout: 1200 });
+      return;
+    }
+
+    callback();
+  }, delay);
+
+  return () => {
+    window.clearTimeout(timerId);
+    if (idleId !== null && "cancelIdleCallback" in window) {
+      window.cancelIdleCallback(idleId);
+    }
+  };
+}
+
 export function BottomNav() {
   const pathname = usePathname();
+  const isLogin = pathname === "/login";
+  const [prefetchedRoutes, setPrefetchedRoutes] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  );
   const [pendingNavigation, setPendingNavigation] = useState<{
     from: string;
     to: string;
@@ -32,6 +57,39 @@ export function BottomNav() {
     ),
     0,
   );
+
+  useEffect(() => {
+    if (isLogin) {
+      return;
+    }
+
+    const cleanups: Array<() => void> = [];
+    const routes = prefetchOrder.filter((href) => href !== pathname);
+
+    for (const [index, href] of routes.entries()) {
+      cleanups.push(
+        scheduleWhenIdle(() => {
+          setPrefetchedRoutes((current) => {
+            if (current.has(href)) {
+              return current;
+            }
+
+            return new Set([...current, href]);
+          });
+        }, 200 + index * 300),
+      );
+    }
+
+    return () => {
+      for (const cleanup of cleanups) {
+        cleanup();
+      }
+    };
+  }, [isLogin, pathname]);
+
+  if (isLogin) {
+    return null;
+  }
 
   return (
     <nav
@@ -60,12 +118,18 @@ export function BottomNav() {
               )}
               href={item.href}
               key={item.href}
-              onClick={() =>
+              onClick={() => {
                 setPendingNavigation({ from: pathname, to: item.href })
-              }
-              onPointerDown={() =>
-                setPendingNavigation({ from: pathname, to: item.href })
-              }
+              }}
+              onPointerDown={() => {
+                setPrefetchedRoutes((current) =>
+                  current.has(item.href)
+                    ? current
+                    : new Set([...current, item.href]),
+                );
+                setPendingNavigation({ from: pathname, to: item.href });
+              }}
+              prefetch={prefetchedRoutes.has(item.href)}
             >
               <Icon
                 className={cn(
