@@ -132,32 +132,28 @@ export default async function Home() {
         </div>
 
         {primaryGoal ? (
-          <Link className="block" href="/goals">
-            <Card>
-              <CardContent className="space-y-3 pt-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-sm text-[#6e6e73]">当前目标</p>
-                    <p className="mt-1 truncate text-lg font-semibold text-[#1d1d1f]">
-                      {primaryGoal.name}
-                    </p>
-                  </div>
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#34c759]/10 text-[#248a3d]">
-                    <Target className="h-5 w-5" />
-                  </span>
+          <Card>
+            <CardContent className="space-y-3 pt-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm text-[#6e6e73]">当前目标</p>
+                  <p className="mt-1 truncate text-lg font-semibold text-[#1d1d1f]">
+                    {primaryGoal.name}
+                  </p>
                 </div>
-                <GoalProgressPanel
-                  currentAmount={primaryGoal.currentAmount}
-                  estimatedReachDate={
-                    primaryGoal.projection.estimatedReachDate
-                  }
-                  monthlyNetAmount={primaryGoal.projection.monthlyNetAmount}
-                  progressPercent={primaryGoal.projection.progressPercent}
-                  remainingAmount={primaryGoal.projection.remainingAmount}
-                />
-              </CardContent>
-            </Card>
-          </Link>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#34c759]/10 text-[#248a3d]">
+                  <Target className="h-5 w-5" />
+                </span>
+              </div>
+              <GoalProgressPanel
+                currentAmount={primaryGoal.currentAmount}
+                estimatedReachDate={primaryGoal.projection.estimatedReachDate}
+                monthlyNetAmount={primaryGoal.projection.monthlyNetAmount}
+                progressPercent={primaryGoal.projection.progressPercent}
+                remainingAmount={primaryGoal.projection.remainingAmount}
+              />
+            </CardContent>
+          </Card>
         ) : null}
 
         <Card>
