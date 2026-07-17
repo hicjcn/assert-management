@@ -48,3 +48,16 @@ docker run -d \
 ```
 
 生产环境必须启用 HTTPS，并限制 MySQL 仅允许应用服务器访问。
+
+## 通行密钥登录
+
+登录页支持使用 Passkey 登录，可通过 iPhone 的 Face ID 和 iCloud 钥匙串完成验证。首次使用时，先通过用户名和密码登录，然后在“设置 → 通行密钥”中创建。
+
+生产环境需要满足以下条件：
+
+- 必须使用 HTTPS 域名，不能通过普通 HTTP 的局域网 IP 使用。
+- `APP_URL` 必须填写用户实际访问的完整站点地址，例如 `https://asset.example.com`。
+- 默认使用 `APP_URL` 的主机名作为 RP ID；需要在子域名间共享通行密钥时，可通过 `PASSKEY_RP_ID` 指定父域名。
+- 可通过 `PASSKEY_RP_NAME` 自定义系统通行密钥提示中显示的站点名称。
+
+部署本次数据库变更前，需要运行 `npm run prisma:deploy` 创建通行密钥凭证表。

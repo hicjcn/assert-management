@@ -31,17 +31,37 @@ enum ChangeType {
 }
 
 model User {
-  id           String          @id @default(cuid())
-  username     String          @unique
-  passwordHash String          @map("password_hash")
-  accounts     Account[]
-  changes      AccountChange[]
-  goals        Goal[]
-  settings     Setting[]
-  createdAt    DateTime        @default(now()) @map("created_at")
-  updatedAt    DateTime        @updatedAt @map("updated_at")
+  id                 String              @id @default(cuid())
+  username           String              @unique
+  passwordHash       String              @map("password_hash")
+  accounts           Account[]
+  changes            AccountChange[]
+  goals              Goal[]
+  settings           Setting[]
+  passkeyCredentials PasskeyCredential[]
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
 
   @@map("users")
+}
+
+model PasskeyCredential {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  credentialId   String   @unique @map("credential_id")
+  publicKey      String   @map("public_key") @db.Text
+  counter        BigInt   @default(0)
+  transports     String?  @db.Text
+  deviceType     String   @map("device_type")
+  backedUp       Boolean  @default(false) @map("backed_up")
+  name           String
+  lastUsedAt     DateTime? @map("last_used_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("passkey_credentials")
 }
 
 model Account {

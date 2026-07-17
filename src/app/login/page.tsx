@@ -2,6 +2,7 @@ import { Lock } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { loginAction } from "@/app/actions";
+import { PasskeyLoginButton } from "@/components/auth/passkey-login-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,7 +26,11 @@ export default async function LoginPage() {
         </CardHeader>
         <CardContent>
           <form action={loginAction} className="space-y-4">
-            <Input name="username" placeholder="用户名" autoComplete="username" />
+            <Input
+              name="username"
+              placeholder="用户名"
+              autoComplete="username webauthn"
+            />
             <Input
               name="password"
               type="password"
@@ -39,6 +44,12 @@ export default async function LoginPage() {
               首次部署时，第一个登录的用户名会自动创建为管理员账号。
             </p>
           </form>
+          <div className="my-4 flex items-center gap-3" aria-hidden="true">
+            <div className="h-px flex-1 bg-black/[0.08]" />
+            <span className="text-xs text-[#86868b]">或</span>
+            <div className="h-px flex-1 bg-black/[0.08]" />
+          </div>
+          <PasskeyLoginButton />
         </CardContent>
       </Card>
     </main>

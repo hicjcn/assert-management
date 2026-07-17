@@ -16,7 +16,12 @@ type SessionPayload = {
   username: string;
 };
 
-function getSessionSecret() {
+type SessionUser = {
+  id: string;
+  username: string;
+};
+
+export function getAuthSigningKey() {
   const secret = process.env.SESSION_SECRET ?? process.env.AUTH_SECRET;
 
   if (!secret && process.env.NODE_ENV === "production") {
@@ -33,7 +38,7 @@ async function signSession(payload: SessionPayload) {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(`${SESSION_MAX_AGE_SECONDS}s`)
-    .sign(getSessionSecret());
+    .sign(getAuthSigningKey());
 }
 
 async function verifyToken(token: string | undefined) {
@@ -42,7 +47,7 @@ async function verifyToken(token: string | undefined) {
   }
 
   try {
-    const { payload } = await jwtVerify(token, getSessionSecret());
+    const { payload } = await jwtVerify(token, getAuthSigningKey());
 
     if (
       typeof payload.userId !== "string" ||
@@ -58,6 +63,23 @@ async function verifyToken(token: string | undefined) {
   } catch {
     return null;
   }
+}
+
+export async function createSessionForUser(user: SessionUser) {
+  const token = await signSession({
+    userId: user.id,
+    username: user.username,
+  });
+
+  (await cookies()).set({
+    name: SESSION_COOKIE,
+    value: token,
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: SESSION_MAX_AGE_SECONDS,
+  });
 }
 
 export async function login(username: string, password: string) {
@@ -92,20 +114,7 @@ export async function login(username: string, password: string) {
     }
   }
 
-  const token = await signSession({
-    userId: user.id,
-    username: user.username,
-  });
-
-  (await cookies()).set({
-    name: SESSION_COOKIE,
-    value: token,
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: SESSION_MAX_AGE_SECONDS,
-  });
+  await createSessionForUser(user);
 }
 
 export async function logout() {
