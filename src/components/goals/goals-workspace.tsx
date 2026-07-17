@@ -189,8 +189,8 @@ function TrendProjectionPanel({
                 <span
                   className={cn(
                     "font-semibold",
-                    amount > 0n && "text-[#248a3d]",
-                    amount < 0n && "text-rose-600",
+                    amount > 0n && "text-rose-600",
+                    amount < 0n && "text-[#248a3d]",
                     amount === 0n && "text-[#6e6e73]",
                   )}
                 >
