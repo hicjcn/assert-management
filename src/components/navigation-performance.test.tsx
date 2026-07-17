@@ -62,6 +62,7 @@ describe("instant navigation feedback", () => {
     const home = screen.getByRole("link", { name: "首页" });
     const accounts = screen.getByRole("link", { name: "账户" });
 
+    expect(screen.queryByRole("link", { name: "记录" })).not.toBeInTheDocument();
     expect(home).toHaveAttribute("aria-current", "page");
     expect(accounts).not.toHaveAttribute("aria-current");
 
@@ -69,6 +70,17 @@ describe("instant navigation feedback", () => {
 
     expect(home).not.toHaveAttribute("aria-current");
     expect(accounts).toHaveAttribute("aria-current", "page");
+  });
+
+  it("keeps records under the home tab", () => {
+    navigationMocks.pathname = "/records";
+    render(<BottomNav />);
+
+    expect(screen.getByRole("link", { name: "首页" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(screen.queryByRole("link", { name: "记录" })).not.toBeInTheDocument();
   });
 
   it("warms common tabs before the charts route", () => {

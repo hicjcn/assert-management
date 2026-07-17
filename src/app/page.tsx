@@ -161,8 +161,14 @@ export default async function Home() {
         ) : null}
 
         <Card>
-          <CardHeader className="pb-3">
+          <CardHeader className="flex flex-row items-center justify-between gap-3 pb-3">
             <CardTitle>最近变更</CardTitle>
+            <Link
+              className="-my-2 -mr-2 inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium text-[#007aff] transition hover:bg-[#007aff]/[0.06] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007aff]"
+              href="/records"
+            >
+              更多
+            </Link>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             {summary.recentChanges.length === 0 ? (
