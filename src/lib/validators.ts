@@ -46,9 +46,9 @@ export const accountChangeSchema = z.object({
 export const goalSchema = z.object({
   name: z.string().trim().min(1, "请输入目标名称"),
   targetAmount: moneyString,
-  currentAmount: moneyString,
   oneTimeIncome: moneyString,
   oneTimeExpense: moneyString,
+  accountIds: z.array(z.string().min(1)).max(100, "关联账户数量过多"),
   note: z.string().trim().optional(),
 });
 

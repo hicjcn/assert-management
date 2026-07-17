@@ -2,6 +2,7 @@
 
 import {
   CalendarClock,
+  ChevronDown,
   Edit3,
   PiggyBank,
   Plus,
@@ -18,6 +19,7 @@ import {
   updateGoalAction,
   updateGoalBudgetAction,
 } from "@/app/actions";
+import { GoalProgressPanel } from "@/components/goals/goal-progress-panel";
 import { MobileShell } from "@/components/layout/mobile-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,6 +27,10 @@ import { Input } from "@/components/ui/input";
 import { formatMonthYear } from "@/lib/date";
 import { formatCents } from "@/lib/money";
 import { cn } from "@/lib/utils";
+import {
+  type AccountCategory,
+  accountCategoryLabels,
+} from "@/types/domain";
 
 type BudgetView = {
   monthlyIncome: string;
@@ -35,6 +41,13 @@ type BudgetView = {
   monthlyOtherIncome: string;
 };
 
+type AccountOption = {
+  id: string;
+  name: string;
+  category: AccountCategory;
+  currentAmount: string;
+};
+
 type GoalView = {
   id: string;
   name: string;
@@ -42,6 +55,12 @@ type GoalView = {
   currentAmount: string;
   oneTimeIncome: string;
   oneTimeExpense: string;
+  accountIds: string[];
+  linkedAccounts: {
+    category: AccountCategory;
+    name: string;
+  }[];
+  progressSource: "net_worth" | "accounts";
   note: string | null;
   projection: {
     monthlyNetAmount: string;
@@ -49,9 +68,21 @@ type GoalView = {
     progressPercent: number;
     estimatedReachDate: string | null;
   };
+  trendProjection: {
+    monthlyTrendAmount: string;
+    monthlyBreakdown: {
+      month: string;
+      amount: string;
+      changeCount: number;
+    }[];
+    observedMonths: number;
+    changeCount: number;
+    estimatedReachDate: string | null;
+  };
 };
 
 type GoalsWorkspaceProps = {
+  accounts: AccountOption[];
   budget: BudgetView;
   goals: GoalView[];
 };
@@ -78,12 +109,103 @@ function formatCentsString(value: string) {
   return formatCents(BigInt(value));
 }
 
-function formatReachDate(value: string | null) {
-  if (!value) {
-    return "暂不可达成";
+function formatTrendReachDate(trend: GoalView["trendProjection"]) {
+  if (trend.estimatedReachDate) {
+    return formatMonthYear(trend.estimatedReachDate);
   }
 
-  return formatMonthYear(value);
+  return trend.changeCount === 0 ? "数据不足" : "暂无增长趋势";
+}
+
+function formatTrendMonth(value: string) {
+  const [year, month] = value.split("-");
+
+  return `${year}年${Number(month)}月`;
+}
+
+function formatTrendFormula(trend: GoalView["trendProjection"]) {
+  const total = trend.monthlyBreakdown.reduce(
+    (sum, month) => sum + BigInt(month.amount),
+    0n,
+  );
+
+  return `合计 ${formatCents(total, { signed: true })} ÷ ${trend.observedMonths} 个月 = ${formatCents(BigInt(trend.monthlyTrendAmount), { signed: true })}`;
+}
+
+function TrendProjectionPanel({
+  trend,
+}: {
+  trend: GoalView["trendProjection"];
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const canExpand = trend.monthlyBreakdown.length > 0;
+
+  return (
+    <div className="rounded-xl bg-[#007aff]/[0.055] px-3 py-3">
+      <div className="flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-xs font-medium text-[#0066cc]">趋势达成</p>
+          {canExpand ? (
+            <p className="mt-1 flex items-center gap-1 text-xs text-[#6e6e73]">
+              <span>近 {trend.observedMonths} 个月月均</span>
+              <button
+                aria-expanded={expanded}
+                className="inline-flex items-center gap-0.5 font-semibold text-[#0066cc]"
+                onClick={() => setExpanded((current) => !current)}
+                type="button"
+              >
+                {formatCents(BigInt(trend.monthlyTrendAmount), {
+                  signed: true,
+                })}
+                <ChevronDown
+                  className={cn(
+                    "h-3.5 w-3.5 transition",
+                    expanded && "rotate-180",
+                  )}
+                />
+              </button>
+            </p>
+          ) : (
+            <p className="mt-1 text-xs text-[#6e6e73]">暂无可计算月份</p>
+          )}
+        </div>
+        <p className="shrink-0 text-sm font-semibold text-[#1d1d1f]">
+          {formatTrendReachDate(trend)}
+        </p>
+      </div>
+      {expanded ? (
+        <div className="mt-3 space-y-2 border-t border-[#007aff]/10 pt-3">
+          {trend.monthlyBreakdown.map((month) => {
+            const amount = BigInt(month.amount);
+
+            return (
+              <div
+                className="flex items-center justify-between gap-3 text-xs"
+                key={month.month}
+              >
+                <span className="text-[#6e6e73]">
+                  {formatTrendMonth(month.month)} · {month.changeCount} 笔
+                </span>
+                <span
+                  className={cn(
+                    "font-semibold",
+                    amount > 0n && "text-rose-600",
+                    amount < 0n && "text-[#248a3d]",
+                    amount === 0n && "text-[#6e6e73]",
+                  )}
+                >
+                  {formatCents(amount, { signed: true })}
+                </span>
+              </div>
+            );
+          })}
+          <p className="border-t border-[#007aff]/10 pt-2 text-xs text-[#3a3a3c]">
+            {formatTrendFormula(trend)}
+          </p>
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 function MoneyInput({ label, name, defaultValue = "0" }: MoneyInputProps) {
@@ -123,9 +245,11 @@ function TextArea({
 
 function GoalForm({
   action,
+  accounts,
   goal,
 }: {
   action: (formData: FormData) => void | Promise<void>;
+  accounts: AccountOption[];
   goal?: GoalView;
 }) {
   return (
@@ -140,28 +264,66 @@ function GoalForm({
           required
         />
       </label>
-      <div className="mt-5 grid grid-cols-2 gap-3">
+      <div className="mt-5 space-y-3">
         <MoneyInput
           defaultValue={goal ? centsToInput(goal.targetAmount) : "0"}
           label="目标金额"
           name="targetAmount"
         />
-        <MoneyInput
-          defaultValue={goal ? centsToInput(goal.currentAmount) : "0"}
-          label="当前已存"
-          name="currentAmount"
-        />
-        <MoneyInput
-          defaultValue={goal ? centsToInput(goal.oneTimeIncome) : "0"}
-          label="一次性收入"
-          name="oneTimeIncome"
-        />
-        <MoneyInput
-          defaultValue={goal ? centsToInput(goal.oneTimeExpense) : "0"}
-          label="一次性支出"
-          name="oneTimeExpense"
-        />
+        <div className="grid grid-cols-2 gap-3">
+          <MoneyInput
+            defaultValue={goal ? centsToInput(goal.oneTimeIncome) : "0"}
+            label="一次性收入"
+            name="oneTimeIncome"
+          />
+          <MoneyInput
+            defaultValue={goal ? centsToInput(goal.oneTimeExpense) : "0"}
+            label="一次性支出"
+            name="oneTimeExpense"
+          />
+        </div>
       </div>
+      <fieldset className="space-y-2">
+        <legend className="text-xs font-medium text-[#6e6e73]">
+          关联资产账户（可选）
+        </legend>
+        <p className="text-xs leading-5 text-[#86868b]">
+          选择后只统计这些账户；不选择则自动使用总净资产。
+        </p>
+        {accounts.length === 0 ? (
+          <p className="rounded-lg bg-black/[0.035] px-3 py-2 text-sm text-[#6e6e73]">
+            暂无可关联的资产账户，将使用总净资产。
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {accounts.map((account) => (
+              <label
+                className="flex min-h-12 items-center gap-3 rounded-xl border border-black/[0.06] bg-white/65 px-3 py-2.5"
+                key={account.id}
+              >
+                <input
+                  className="h-5 w-5 accent-[#007aff]"
+                  defaultChecked={goal?.accountIds.includes(account.id)}
+                  name="accountIds"
+                  type="checkbox"
+                  value={account.id}
+                />
+                <span className="flex min-w-0 flex-1 items-center gap-1.5">
+                  <span className="min-w-0 truncate text-sm font-medium text-[#1d1d1f]">
+                    {account.name}
+                  </span>
+                  <span className="inline-flex h-5 shrink-0 items-center rounded-full bg-black/[0.05] px-1.5 text-[10px] font-medium text-[#6e6e73]">
+                    {accountCategoryLabels[account.category]}
+                  </span>
+                </span>
+                <span className="shrink-0 text-xs text-[#6e6e73]">
+                  {formatCentsString(account.currentAmount)}
+                </span>
+              </label>
+            ))}
+          </div>
+        )}
+      </fieldset>
       <label className="space-y-1.5 text-xs font-medium text-[#6e6e73]">
         <span>备注</span>
         <TextArea defaultValue={goal?.note ?? ""} name="note" placeholder="可选" />
@@ -202,7 +364,11 @@ function HeaderActionButton({
   );
 }
 
-export function GoalsWorkspace({ budget, goals }: GoalsWorkspaceProps) {
+export function GoalsWorkspace({
+  accounts,
+  budget,
+  goals,
+}: GoalsWorkspaceProps) {
   const [openPanel, setOpenPanel] = useState<"budget" | "create" | null>(null);
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
   const [confirmingDeleteId, setConfirmingDeleteId] = useState<string | null>(
@@ -305,7 +471,7 @@ export function GoalsWorkspace({ budget, goals }: GoalsWorkspaceProps) {
             <div>
               <CardTitle>新增目标</CardTitle>
               <p className="mt-1 text-xs text-[#6e6e73]">
-                设置目标金额和当前进度
+                设置目标金额，进度由账户自动计算
               </p>
             </div>
             <button
@@ -317,7 +483,7 @@ export function GoalsWorkspace({ budget, goals }: GoalsWorkspaceProps) {
             </button>
           </CardHeader>
           <CardContent>
-            <GoalForm action={createGoalAction} />
+            <GoalForm accounts={accounts} action={createGoalAction} />
           </CardContent>
         </Card>
       ) : null}
@@ -331,6 +497,7 @@ export function GoalsWorkspace({ budget, goals }: GoalsWorkspaceProps) {
       ) : (
         goals.map((goal) => {
           const projection = goal.projection;
+          const trendProjection = goal.trendProjection;
           const editing = editingGoalId === goal.id;
 
           return (
@@ -347,6 +514,18 @@ export function GoalsWorkspace({ budget, goals }: GoalsWorkspaceProps) {
                     <p className="mt-1 text-xs text-[#6e6e73]">
                       目标 {formatCentsString(goal.targetAmount)}
                     </p>
+                    <p className="mt-1 truncate text-xs text-[#86868b]">
+                      {goal.progressSource === "net_worth"
+                        ? "进度来源：总净资产"
+                        : goal.linkedAccounts.length > 0
+                          ? `进度来源：${goal.linkedAccounts
+                              .map(
+                                (account) =>
+                                  `${account.name}（${accountCategoryLabels[account.category]}）`,
+                              )
+                              .join("、")}`
+                          : "进度来源：关联账户已归档"}
+                    </p>
                   </div>
                   {editing ? null : (
                     <button
@@ -358,44 +537,24 @@ export function GoalsWorkspace({ budget, goals }: GoalsWorkspaceProps) {
                     </button>
                   )}
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-black/[0.06]">
-                  <div
-                    className="h-full rounded-full bg-[#34c759]"
-                    style={{ width: `${projection.progressPercent}%` }}
-                  />
-                </div>
+                <GoalProgressPanel
+                  currentAmount={goal.currentAmount}
+                  estimatedReachDate={projection.estimatedReachDate}
+                  monthlyNetAmount={projection.monthlyNetAmount}
+                  progressPercent={projection.progressPercent}
+                  remainingAmount={projection.remainingAmount}
+                />
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <p className="text-xs text-[#6e6e73]">当前进度</p>
-                    <p className="mt-1 font-semibold text-[#1d1d1f]">
-                      {projection.progressPercent.toFixed(1)}%
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-[#6e6e73]">每月可存</p>
-                    <p className="mt-1 font-semibold text-[#1d1d1f]">
-                      {formatCentsString(projection.monthlyNetAmount)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-[#6e6e73]">剩余金额</p>
-                    <p className="mt-1 font-semibold text-[#1d1d1f]">
-                      {formatCentsString(projection.remainingAmount)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-[#6e6e73]">预计达成</p>
-                    <p className="mt-1 font-semibold text-[#1d1d1f]">
-                      {formatReachDate(projection.estimatedReachDate)}
-                    </p>
-                  </div>
-                </div>
+                <TrendProjectionPanel trend={trendProjection} />
 
                 {editing ? (
                   <div className="space-y-3 border-t border-black/[0.06] pt-4">
-                    <GoalForm action={updateGoalAction} goal={goal} />
+                    <GoalForm
+                      accounts={accounts}
+                      action={updateGoalAction}
+                      goal={goal}
+                    />
                     <div className="grid grid-cols-2 gap-3">
                       <Button
                         className="w-full"

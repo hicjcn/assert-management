@@ -7,6 +7,7 @@ import Link from "next/link";
 import { logoutAction } from "@/app/actions";
 import { AccountChangeAmount } from "@/components/accounts/account-change-amount";
 import { AccountMark } from "@/components/accounts/account-visual";
+import { GoalProgressPanel } from "@/components/goals/goal-progress-panel";
 import { MobileShell } from "@/components/layout/mobile-shell";
 import { Sparkline } from "@/components/charts/sparkline";
 import { Button } from "@/components/ui/button";
@@ -131,44 +132,39 @@ export default async function Home() {
         </div>
 
         {primaryGoal ? (
-          <Link className="block" href="/goals">
-            <Card>
-              <CardContent className="space-y-3 pt-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-sm text-[#6e6e73]">当前目标</p>
-                    <p className="mt-1 truncate text-lg font-semibold text-[#1d1d1f]">
-                      {primaryGoal.name}
-                    </p>
-                  </div>
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#34c759]/10 text-[#248a3d]">
-                    <Target className="h-5 w-5" />
-                  </span>
+          <Card>
+            <CardContent className="space-y-3 pt-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm text-[#6e6e73]">当前目标</p>
+                  <p className="mt-1 truncate text-lg font-semibold text-[#1d1d1f]">
+                    {primaryGoal.name}
+                  </p>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-black/[0.06]">
-                  <div
-                    className="h-full rounded-full bg-[#34c759]"
-                    style={{
-                      width: `${primaryGoal.projection.progressPercent}%`,
-                    }}
-                  />
-                </div>
-                <div className="flex items-center justify-between gap-3 text-sm">
-                  <span className="text-[#6e6e73]">
-                    {primaryGoal.projection.progressPercent.toFixed(1)}%
-                  </span>
-                  <span className="font-semibold text-[#1d1d1f]">
-                    剩余 {formatCents(primaryGoal.projection.remainingAmount)}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#34c759]/10 text-[#248a3d]">
+                  <Target className="h-5 w-5" />
+                </span>
+              </div>
+              <GoalProgressPanel
+                currentAmount={primaryGoal.currentAmount}
+                estimatedReachDate={primaryGoal.projection.estimatedReachDate}
+                monthlyNetAmount={primaryGoal.projection.monthlyNetAmount}
+                progressPercent={primaryGoal.projection.progressPercent}
+                remainingAmount={primaryGoal.projection.remainingAmount}
+              />
+            </CardContent>
+          </Card>
         ) : null}
 
         <Card>
-          <CardHeader className="pb-3">
+          <CardHeader className="flex flex-row items-center justify-between gap-3 pb-3">
             <CardTitle>最近变更</CardTitle>
+            <Link
+              className="-my-2 -mr-2 inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium text-[#007aff] transition hover:bg-[#007aff]/[0.06] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007aff]"
+              href="/records"
+            >
+              更多
+            </Link>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             {summary.recentChanges.length === 0 ? (

@@ -52,7 +52,8 @@ export default async function RecordsPage() {
             <option value="">选择账户</option>
             {accounts.map((account) => (
               <option key={account.id} value={account.id}>
-                {account.name} · {formatAccountCents(account.currentAmount, account)}
+                {account.name}（{accountCategoryLabels[account.category]}） ·{" "}
+                {formatAccountCents(account.currentAmount, account)}
               </option>
             ))}
           </select>
