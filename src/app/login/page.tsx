@@ -1,7 +1,6 @@
 import {
   ArrowRight,
   KeyRound,
-  ShieldCheck,
   Sparkles,
   UserRound,
   WalletCards,
@@ -130,16 +129,6 @@ export default async function LoginPage() {
                 <div className="h-px flex-1 bg-black/[0.07]" />
               </div>
               <PasskeyLoginButton />
-
-              <div className="mt-5 flex gap-2.5 rounded-xl bg-[#f5f5f7]/90 px-3.5 py-3">
-                <ShieldCheck
-                  className="mt-0.5 h-4 w-4 shrink-0 text-[#34c759]"
-                  aria-hidden="true"
-                />
-                <p className="text-xs leading-5 text-[#6e6e73]">
-                  首次部署时，首次登录的用户名将自动创建为管理员账号。
-                </p>
-              </div>
             </CardContent>
           </Card>
 
