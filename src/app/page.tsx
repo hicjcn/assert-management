@@ -7,6 +7,7 @@ import Link from "next/link";
 import { logoutAction } from "@/app/actions";
 import { AccountChangeAmount } from "@/components/accounts/account-change-amount";
 import { AccountMark } from "@/components/accounts/account-visual";
+import { GoalProgressPanel } from "@/components/goals/goal-progress-panel";
 import { MobileShell } from "@/components/layout/mobile-shell";
 import { Sparkline } from "@/components/charts/sparkline";
 import { Button } from "@/components/ui/button";
@@ -145,22 +146,15 @@ export default async function Home() {
                     <Target className="h-5 w-5" />
                   </span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-black/[0.06]">
-                  <div
-                    className="h-full rounded-full bg-[#34c759]"
-                    style={{
-                      width: `${primaryGoal.projection.progressPercent}%`,
-                    }}
-                  />
-                </div>
-                <div className="flex items-center justify-between gap-3 text-sm">
-                  <span className="text-[#6e6e73]">
-                    {primaryGoal.projection.progressPercent.toFixed(1)}%
-                  </span>
-                  <span className="font-semibold text-[#1d1d1f]">
-                    剩余 {formatCents(primaryGoal.projection.remainingAmount)}
-                  </span>
-                </div>
+                <GoalProgressPanel
+                  currentAmount={primaryGoal.currentAmount}
+                  estimatedReachDate={
+                    primaryGoal.projection.estimatedReachDate
+                  }
+                  monthlyNetAmount={primaryGoal.projection.monthlyNetAmount}
+                  progressPercent={primaryGoal.projection.progressPercent}
+                  remainingAmount={primaryGoal.projection.remainingAmount}
+                />
               </CardContent>
             </Card>
           </Link>

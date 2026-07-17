@@ -57,6 +57,7 @@ model Account {
   note           String?         @db.Text
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   changes        AccountChange[]
+  goalLinks      GoalAccount[]
   createdAt      DateTime        @default(now()) @map("created_at")
   updatedAt      DateTime        @updatedAt @map("updated_at")
 
@@ -89,20 +90,31 @@ model AccountChange {
 }
 
 model Goal {
-  id             String   @id @default(cuid())
-  userId         String   @map("user_id")
+  id             String        @id @default(cuid())
+  userId         String        @map("user_id")
   name           String
-  targetAmount   BigInt   @map("target_amount")
-  currentAmount  BigInt   @default(0) @map("current_amount")
-  oneTimeIncome  BigInt   @default(0) @map("one_time_income")
-  oneTimeExpense BigInt   @default(0) @map("one_time_expense")
-  note           String?  @db.Text
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  targetAmount   BigInt        @map("target_amount")
+  oneTimeIncome  BigInt        @default(0) @map("one_time_income")
+  oneTimeExpense BigInt        @default(0) @map("one_time_expense")
+  note           String?       @db.Text
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountLinks   GoalAccount[]
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
 
   @@index([userId])
   @@map("goals")
+}
+
+model GoalAccount {
+  goalId    String  @map("goal_id")
+  accountId String  @map("account_id")
+  goal      Goal    @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  account   Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@id([goalId, accountId])
+  @@index([accountId])
+  @@map("goal_accounts")
 }
 
 model Setting {
