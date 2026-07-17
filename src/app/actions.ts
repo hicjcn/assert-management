@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
 import {
@@ -16,6 +16,10 @@ import {
   updateGoal,
   updateGoalBudget,
 } from "@/server/goals";
+import {
+  assetDataCacheTag,
+  goalDataCacheTag,
+} from "@/server/cache";
 
 function redirectPath(formData: FormData, fallback: string) {
   const value = formData.get("redirectTo");
@@ -41,9 +45,7 @@ export async function createAccountAction(formData: FormData) {
   const session = await requireSession();
 
   await createAccount(session.userId, formData);
-  revalidatePath("/");
-  revalidatePath("/accounts");
-  revalidatePath("/records");
+  updateTag(assetDataCacheTag(session.userId));
   redirect("/accounts");
 }
 
@@ -52,9 +54,7 @@ export async function updateAccountAction(formData: FormData) {
   const destination = redirectPath(formData, "/accounts");
 
   await updateAccount(session.userId, formData);
-  revalidatePath("/");
-  revalidatePath("/accounts");
-  revalidatePath("/records");
+  updateTag(assetDataCacheTag(session.userId));
   redirect(destination);
 }
 
@@ -62,9 +62,7 @@ export async function deleteAccountAction(formData: FormData) {
   const session = await requireSession();
 
   await deleteAccount(session.userId, formData);
-  revalidatePath("/");
-  revalidatePath("/accounts");
-  revalidatePath("/records");
+  updateTag(assetDataCacheTag(session.userId));
   redirect("/accounts");
 }
 
@@ -72,9 +70,7 @@ export async function createAccountChangeAction(formData: FormData) {
   const session = await requireSession();
 
   await createAccountChange(session.userId, formData);
-  revalidatePath("/");
-  revalidatePath("/accounts");
-  revalidatePath("/records");
+  updateTag(assetDataCacheTag(session.userId));
   redirect("/records");
 }
 
@@ -82,8 +78,7 @@ export async function createGoalAction(formData: FormData) {
   const session = await requireSession();
 
   await createGoal(session.userId, formData);
-  revalidatePath("/");
-  revalidatePath("/goals");
+  updateTag(goalDataCacheTag(session.userId));
   redirect("/goals");
 }
 
@@ -91,8 +86,7 @@ export async function updateGoalAction(formData: FormData) {
   const session = await requireSession();
 
   await updateGoal(session.userId, formData);
-  revalidatePath("/");
-  revalidatePath("/goals");
+  updateTag(goalDataCacheTag(session.userId));
   redirect("/goals");
 }
 
@@ -100,8 +94,7 @@ export async function deleteGoalAction(formData: FormData) {
   const session = await requireSession();
 
   await deleteGoal(session.userId, formData);
-  revalidatePath("/");
-  revalidatePath("/goals");
+  updateTag(goalDataCacheTag(session.userId));
   redirect("/goals");
 }
 
@@ -109,7 +102,6 @@ export async function updateGoalBudgetAction(formData: FormData) {
   const session = await requireSession();
 
   await updateGoalBudget(session.userId, formData);
-  revalidatePath("/");
-  revalidatePath("/goals");
+  updateTag(goalDataCacheTag(session.userId));
   redirect("/goals");
 }

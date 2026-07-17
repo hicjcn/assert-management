@@ -22,6 +22,11 @@ vi.mock("@/server/db/prisma", () => ({
   prisma: prismaMock,
 }));
 
+vi.mock("next/cache", () => ({
+  cacheLife: vi.fn(),
+  cacheTag: vi.fn(),
+}));
+
 import {
   createAccount,
   createAccountChange,

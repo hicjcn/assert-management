@@ -9,6 +9,7 @@ import {
   goalUpdateSchema,
 } from "@/lib/validators";
 import { prisma } from "@/server/db/prisma";
+import { cacheGoalData } from "@/server/cache";
 
 type GoalTargetAmounts = {
   targetAmount: bigint;
@@ -233,6 +234,9 @@ function toGoalView(goal: GoalTargetAmounts & {
 }
 
 export async function getGoalsPageData(userId: string) {
+  "use cache";
+  cacheGoalData(userId);
+
   const [goals, budgetSetting] = await Promise.all([
     prisma.goal.findMany({
       where: { userId },
