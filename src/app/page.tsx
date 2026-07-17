@@ -5,13 +5,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-import { logoutAction } from "@/app/actions";
 import { AccountChangeAmount } from "@/components/accounts/account-change-amount";
 import { AccountMark } from "@/components/accounts/account-visual";
 import { GoalProgressPanel } from "@/components/goals/goal-progress-panel";
 import { MobileShell } from "@/components/layout/mobile-shell";
 import { Sparkline } from "@/components/charts/sparkline";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatShortDateTime } from "@/lib/date";
 import { formatCents } from "@/lib/money";
@@ -228,12 +226,6 @@ export default async function Home() {
             )}
           </CardContent>
         </Card>
-
-        <form action={logoutAction}>
-          <Button className="w-full" type="submit" variant="ghost">
-            退出登录
-          </Button>
-        </form>
       </section>
     </MobileShell>
   );
