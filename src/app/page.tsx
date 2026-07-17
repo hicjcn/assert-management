@@ -1,5 +1,6 @@
 import {
   ArrowUpRight,
+  Settings,
   Target,
 } from "lucide-react";
 import Link from "next/link";
@@ -56,9 +57,27 @@ export default async function Home() {
   const primaryGoal = goals[0];
   const trendSeries = buildTrendSeries(charts);
   const hasTrend = trendSeries.length > 0;
+  const header = (
+    <div className="flex items-start justify-between gap-4 pt-2">
+      <div className="min-w-0">
+        <h1 className="text-3xl font-semibold tracking-normal text-[#1d1d1f] drop-shadow-[0_1px_0_rgba(255,255,255,0.72)]">
+          资产管家
+        </h1>
+        <div className="mt-3 h-1 w-12 rounded-full bg-[#007aff]" />
+      </div>
+      <Link
+        aria-label="设置"
+        className="-mr-1 mt-1 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#007aff] transition hover:bg-white/55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007aff]"
+        href="/settings"
+      >
+        <Settings className="h-5 w-5" />
+        <span className="sr-only">设置</span>
+      </Link>
+    </div>
+  );
 
   return (
-    <MobileShell title="资产管家">
+    <MobileShell header={header} title="资产管家">
       <section className="space-y-4">
         <Card className="overflow-hidden border-[#007aff]/10 bg-white/90 shadow-[0_14px_34px_rgba(0,122,255,0.10)]">
           <CardHeader className="flex flex-row items-start justify-between gap-4">
