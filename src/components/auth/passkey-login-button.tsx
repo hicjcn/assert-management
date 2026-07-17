@@ -56,13 +56,13 @@ export function PasskeyLoginButton() {
   return (
     <div className="space-y-2">
       <Button
-        className="w-full disabled:cursor-not-allowed disabled:opacity-50"
+        className="h-12 w-full rounded-xl border-black/[0.07] bg-white/80 shadow-none disabled:cursor-not-allowed disabled:opacity-50"
         variant="secondary"
         type="button"
         disabled={supported !== true || pending}
         onClick={loginWithPasskey}
       >
-        <Fingerprint className="h-5 w-5" />
+        <Fingerprint className="h-5 w-5 text-[#007aff]" />
         {pending ? "正在验证…" : "使用通行密钥登录"}
       </Button>
       {supported === false ? (
@@ -70,7 +70,7 @@ export function PasskeyLoginButton() {
           当前浏览器或连接不支持通行密钥，请使用 HTTPS 访问。
         </p>
       ) : (
-        <p className="text-center text-xs leading-5 text-[#6e6e73]">
+        <p className="text-center text-[11px] leading-5 text-[#86868b]">
           支持 Face ID、Touch ID 或设备解锁
         </p>
       )}
