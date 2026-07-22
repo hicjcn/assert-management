@@ -89,7 +89,7 @@ export async function getDashboard(userId: string) {
         changedAt: { gte: currentMonthStart },
         account: { includeInStats: true, archived: false },
       },
-      select: { changeAmount: true },
+      select: { changeAmount: true, categorySnapshot: true },
     }),
     prisma.accountChange.findMany({
       where: { userId },
@@ -107,7 +107,13 @@ export async function getDashboard(userId: string) {
     .filter((account) => account.type === AccountType.LIABILITY)
     .reduce((sum, account) => sum + account.currentAmount, 0n);
   const monthlyChange = monthChanges.reduce(
-    (sum, change) => sum + change.changeAmount,
+    (sum, change) => {
+      const category = accountCategoryFromPrisma[change.categorySnapshot];
+
+      return liabilityCategories.has(category)
+        ? sum - change.changeAmount
+        : sum + change.changeAmount;
+    },
     0n,
   );
 

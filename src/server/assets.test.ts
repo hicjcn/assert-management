@@ -668,7 +668,20 @@ describe("asset services", () => {
       const recentChangedAt = new Date("2026-07-04T12:00:00.000Z");
       prismaMock.account.findMany.mockResolvedValue(accountRows);
       prismaMock.accountChange.findMany
-        .mockResolvedValueOnce([{ changeAmount: 10000n }, { changeAmount: -2500n }])
+        .mockResolvedValueOnce([
+          {
+            changeAmount: 10000n,
+            categorySnapshot: AccountCategory.DEBIT_CARD,
+          },
+          {
+            changeAmount: 2500n,
+            categorySnapshot: AccountCategory.CREDIT_CARD,
+          },
+          {
+            changeAmount: -1000n,
+            categorySnapshot: AccountCategory.LIABILITY_ACCOUNT,
+          },
+        ])
         .mockResolvedValueOnce([
           {
             id: "change-1",
@@ -688,7 +701,7 @@ describe("asset services", () => {
         assets: 500000n,
         liabilities: 120000n,
         netWorth: 380000n,
-        monthlyChange: 7500n,
+        monthlyChange: 8500n,
         accounts: [
           {
             id: "asset-1",
@@ -734,7 +747,7 @@ describe("asset services", () => {
           changedAt: { gte: new Date("2026-06-30T16:00:00.000Z") },
           account: { includeInStats: true, archived: false },
         },
-        select: { changeAmount: true },
+        select: { changeAmount: true, categorySnapshot: true },
       });
       expect(prismaMock.accountChange.findMany).toHaveBeenNthCalledWith(2, {
         where: { userId: "user-1" },
